@@ -101,6 +101,9 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
   entry and photos together) instead of four in a row. The page and its title share the result.
 - **Vercel runs in London (`vercel.json`, `lhr1`)** to sit next to the Supabase project (eu-west-2). Every
   database call is a round trip, so distance between the two is paid on each one.
+- **Light / dark / system theme** (`next-themes`): a sun/moon menu on the dex and species pages. It
+  defaults to following the device, remembers the choice in the browser, and sets the `dark` class before
+  first paint so there's no flash. The choice is per device, not stored on the account.
 
 ## Deliberately later (not MVP)
 
