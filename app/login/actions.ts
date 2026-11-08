@@ -12,6 +12,28 @@ export type AuthState =
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+type AuthFailure = { code?: string; status?: number; message: string };
+
+// Supabase has two different "429 too many requests" errors, and they need
+// different advice. Turns an auth error into a message a person can act on, and
+// logs the real code on the server so it can be diagnosed.
+function describeRateLimit(
+    action: string,
+    error: AuthFailure,
+): string | null {
+    if (error.code === "over_email_send_rate_limit") {
+        // Almost always means "Confirm email" is still on in Supabase: sign-up is
+        // trying to send an email, and the built-in sender allows only a few an hour.
+        console.error(`${action}: email send limit reached (${error.message})`);
+        return "We can't send any more emails right now, so we can't finish that. Try again in an hour.";
+    }
+    if (error.code === "over_request_rate_limit" || error.status === 429) {
+        console.error(`${action}: request rate limit (${error.code ?? error.message})`);
+        return "Too many attempts from your connection. Wait a minute and try again.";
+    }
+    return null;
+}
+
 function readCredentials(formData: FormData) {
     const email = String(formData.get("email") ?? "")
         .trim()
@@ -44,15 +66,18 @@ export async function signIn(
                 message: "Confirm your email first. Check your inbox for the link.",
             };
         }
+        const limited = describeRateLimit("signIn", error);
+        if (limited) return { status: "error", message: limited };
+        if (error.code !== "invalid_credentials") {
+            console.error("signIn failed", error.code, error.message);
+        }
         return {
             status: "error",
             message:
-                error.status === 429
-                    ? "Too many attempts. Wait a minute and try again."
-                    : // Same message for a wrong email and a wrong password, on purpose.
-                      error.code === "invalid_credentials"
-                      ? "That email and password don't match."
-                      : "We couldn't sign you in. Try again in a moment.",
+                // Same message for a wrong email and a wrong password, on purpose.
+                error.code === "invalid_credentials"
+                    ? "That email and password don't match."
+                    : "We couldn't sign you in. Try again in a moment.",
         };
     }
 
@@ -107,12 +132,12 @@ export async function signUp(
                 message: "That password is too easy to guess. Try a longer or less common one.",
             };
         }
+        const limited = describeRateLimit("signUp", error);
+        if (limited) return { status: "error", message: limited };
+        console.error("signUp failed", error.code, error.message);
         return {
             status: "error",
-            message:
-                error.status === 429
-                    ? "Too many attempts. Wait a minute and try again."
-                    : "We couldn't create your account. Try again in a moment.",
+            message: "We couldn't create your account. Try again in a moment.",
         };
     }
 

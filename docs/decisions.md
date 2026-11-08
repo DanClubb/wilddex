@@ -29,7 +29,8 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
   stores them). Passwordless was tried first and dropped: magic links cannot sign in an installed PWA
   (the app and the browser keep separate storage), and the emailed-code fix needs custom SMTP because
   Supabase's built-in sender is capped at a few emails an hour. "Confirm email" is off for now so
-  sign-up sends no email. `/auth/confirm` stays for confirmation links when that is turned on.
+  sign-up sends no email (if it is left on, sign-up fails with `over_email_send_rate_limit` after a couple of
+  emails an hour). `/auth/confirm` stays for confirmation links when that is turned on.
 - **Google sign-in is the planned next addition**, so nobody has to make a password. It needs a Google
   Cloud OAuth client; to be added as its own change once that exists.
 - **Installable PWA without a service worker.** `app/manifest.ts` plus icons is enough for "Add to
