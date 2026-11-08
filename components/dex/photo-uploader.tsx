@@ -278,27 +278,25 @@ export function UploadForm({
                 )}
 
                 {count > 0 && (
-                    <div className="sticky -bottom-6 -mx-6 -mb-6 bg-popover px-6 pt-3 pb-6">
-                        <Button
-                            type="submit"
-                            className="h-11 w-full"
-                            disabled={busy}
-                        >
-                            {busy ? (
-                                <>
-                                    <Spinner
-                                        aria-hidden="true"
-                                        role="presentation"
-                                    />
-                                    Saving…
-                                </>
-                            ) : firstLog ? (
-                                "Log sighting"
-                            ) : (
-                                `Add ${count} ${count === 1 ? "photo" : "photos"}`
-                            )}
-                        </Button>
-                    </div>
+                    <Button
+                        type="submit"
+                        className="h-11 w-full"
+                        disabled={busy}
+                    >
+                        {busy ? (
+                            <>
+                                <Spinner
+                                    aria-hidden="true"
+                                    role="presentation"
+                                />
+                                Saving…
+                            </>
+                        ) : firstLog ? (
+                            "Log sighting"
+                        ) : (
+                            `Add ${count} ${count === 1 ? "photo" : "photos"}`
+                        )}
+                    </Button>
                 )}
             </form>
         </>
