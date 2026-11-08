@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import type { DexCard } from "@/lib/dex";
 import { GroupIcon } from "./group-icon";
 import { openLog } from "@/lib/log-url";
+import { PendingOverlay } from "./link-pending";
 import { RarityPips } from "./rarity-pips";
 
 // A found species shows the user's own cover photo; one still to find is a grey
@@ -63,6 +64,7 @@ export function SpeciesCard({
                         <span className="sr-only">Found</span>
                     </span>
                 )}
+                <PendingOverlay />
             </div>
 
             <div className="space-y-1.5 p-3">

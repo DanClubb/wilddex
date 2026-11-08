@@ -94,6 +94,14 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 - **Logging a sighting = first photo (required) + optional date, place and notes.** Later visits add
   photos only. Photos upload straight from the browser to storage, then a database function records them.
 
+- **Navigation always gives feedback.** Tapping a found card dims it with a spinner, and the Back and
+  Edit-settings links swap their icon for a spinner, using Next's `useLinkStatus`. (Not a full-page
+  loading screen: that would stop the photo morph from pairing.)
+- **The species page makes one database call** (`species_page()`, a function returning species, rarity,
+  entry and photos together) instead of four in a row. The page and its title share the result.
+- **Vercel runs in London (`vercel.json`, `lhr1`)** to sit next to the Supabase project (eu-west-2). Every
+  database call is a round trip, so distance between the two is paid on each one.
+
 ## Deliberately later (not MVP)
 
 - Offline logging

@@ -394,6 +394,7 @@ export type Database = {
       shared_dex: { Args: { p_token: string }; Returns: Json }
       shared_species: { Args: { p_token: string; p_slug: string }; Returns: Json }
       set_cover_photo: { Args: { p_photo_id: string }; Returns: undefined }
+      species_page: { Args: { p_slug: string }; Returns: Json }
     }
     Enums: {
       rarity_tier: "common" | "uncommon" | "rare" | "legendary"
