@@ -13,6 +13,12 @@ import {
 import { cn } from "@/lib/utils";
 import { PhotoMenu } from "./photo-menu";
 
+// The default outline button turns transparent in dark mode, which lets the
+// photo show through. A solid backdrop and shadow keep the arrows readable on
+// any image, light or dark, in both themes.
+const CHEVRON =
+    "size-10 border-border bg-background/90 text-foreground shadow-md backdrop-blur-sm hover:bg-background disabled:opacity-0 dark:bg-background/90 dark:hover:bg-background";
+
 export type CarouselPhoto = {
     id: string;
     src: string;
@@ -70,8 +76,8 @@ export function PhotoCarousel({
             </CarouselContent>
             {many && (
                 <>
-                    <CarouselPrevious className="left-2" />
-                    <CarouselNext className="right-2" />
+                    <CarouselPrevious className={`left-2 ${CHEVRON}`} />
+                    <CarouselNext className={`right-2 ${CHEVRON}`} />
                     <Dots count={photos.length} />
                 </>
             )}
@@ -108,8 +114,8 @@ function Dots({ count }: { count: number }) {
                     aria-current={i === selected}
                     onClick={() => api?.scrollTo(i)}
                     className={cn(
-                        "size-2 rounded-full bg-background/60 shadow transition-all",
-                        i === selected && "w-5 bg-background",
+                        "size-2 rounded-full bg-white/60 shadow-md ring-1 ring-black/10 transition-all",
+                        i === selected && "w-5 bg-white",
                     )}
                 />
             ))}
