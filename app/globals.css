@@ -81,15 +81,15 @@
   --chart-4: oklch(0.508 0.118 165.612);
   --chart-5: oklch(0.432 0.095 166.913);
   --radius: 0.625rem;
-  /* Rarity tiers: a soft background plus a darker text colour of the same hue. */
-  --rarity-common: oklch(0.92 0.012 107);
+  /* Rarity tiers: --rarity-* is the dot colour, -foreground a darker shade of it for the label. */
+  --rarity-common: oklch(0.6 0.02 107);
   --rarity-common-foreground: oklch(0.38 0.02 107);
-  --rarity-uncommon: oklch(0.91 0.05 240);
+  --rarity-uncommon: oklch(0.6 0.17 250);
   --rarity-uncommon-foreground: oklch(0.38 0.11 250);
-  --rarity-rare: oklch(0.9 0.06 300);
+  --rarity-rare: oklch(0.55 0.22 300);
   --rarity-rare-foreground: oklch(0.38 0.15 300);
-  --rarity-legendary: oklch(0.9 0.13 85);
-  --rarity-legendary-foreground: oklch(0.4 0.1 65);
+  --rarity-legendary: oklch(0.76 0.16 82);
+  --rarity-legendary-foreground: oklch(0.45 0.11 68);
   --sidebar: oklch(0.988 0.003 106.5);
   --sidebar-foreground: oklch(0.153 0.006 107.1);
   --sidebar-primary: oklch(0.627 0.194 149.214);
@@ -124,13 +124,13 @@
   --chart-3: oklch(0.596 0.145 163.225);
   --chart-4: oklch(0.508 0.118 165.612);
   --chart-5: oklch(0.432 0.095 166.913);
-  --rarity-common: oklch(0.34 0.015 107);
+  --rarity-common: oklch(0.72 0.02 107);
   --rarity-common-foreground: oklch(0.86 0.015 107);
-  --rarity-uncommon: oklch(0.34 0.07 245);
+  --rarity-uncommon: oklch(0.72 0.14 245);
   --rarity-uncommon-foreground: oklch(0.86 0.07 240);
-  --rarity-rare: oklch(0.36 0.1 300);
+  --rarity-rare: oklch(0.7 0.18 300);
   --rarity-rare-foreground: oklch(0.87 0.08 300);
-  --rarity-legendary: oklch(0.4 0.09 80);
+  --rarity-legendary: oklch(0.82 0.15 85);
   --rarity-legendary-foreground: oklch(0.9 0.12 90);
   --sidebar: oklch(0.228 0.013 107.4);
   --sidebar-foreground: oklch(0.988 0.003 106.5);
