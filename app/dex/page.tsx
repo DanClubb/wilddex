@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { DexNav } from "@/components/dex/dex-nav";
 import { DexBrowser } from "@/components/dex/dex-browser";
 import { createClient } from "@/lib/supabase/server";
 import type { DexCard } from "@/lib/dex";
@@ -82,6 +81,8 @@ export default async function DexPage() {
 
     return (
         <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-4 pt-8 pb-12">
+            <DexNav />
+
             <header className="space-y-3">
                 <h1 className="font-heading text-3xl font-bold">
                     {profile.dex_name ?? "Your WildDex"}
@@ -110,21 +111,6 @@ export default async function DexPage() {
             </header>
 
             <DexBrowser cards={cards} />
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <Button asChild variant="default" className="h-11 w-full">
-                    <Link href="/setup">Edit dex settings</Link>
-                </Button>
-                <form action="/auth/signout" method="post">
-                    <Button
-                        type="submit"
-                        variant="destructive"
-                        className="h-11 w-full"
-                    >
-                        Sign out
-                    </Button>
-                </form>
-            </div>
         </main>
     );
 }
