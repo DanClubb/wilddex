@@ -1,19 +1,43 @@
-import { Check, Leaf } from "lucide-react";
+import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DexCard, Rarity } from "@/lib/dex";
+import { GroupIcon } from "./group-icon";
 
-const RARITY: Record<Rarity, { label: string; className: string }> = {
-    common: { label: "Common", className: "bg-rarity-common text-rarity-common-foreground" },
-    uncommon: { label: "Uncommon", className: "bg-rarity-uncommon text-rarity-uncommon-foreground" },
-    rare: { label: "Rare", className: "bg-rarity-rare text-rarity-rare-foreground" },
-    legendary: { label: "Legendary", className: "bg-rarity-legendary text-rarity-legendary-foreground" },
+// How many of the four circles are filled, and the colours for each tier.
+const RARITY: Record<Rarity, { label: string; filled: number; className: string }> = {
+    common: { label: "Common", filled: 1, className: "bg-rarity-common text-rarity-common-foreground" },
+    uncommon: { label: "Uncommon", filled: 2, className: "bg-rarity-uncommon text-rarity-uncommon-foreground" },
+    rare: { label: "Rare", filled: 3, className: "bg-rarity-rare text-rarity-rare-foreground" },
+    legendary: { label: "Legendary", filled: 4, className: "bg-rarity-legendary text-rarity-legendary-foreground" },
 };
+
+// Four circles, filled one to four for common to legendary. The circles take the
+// tier's text colour, so they stay readable on its soft background.
+function RarityPips({ rarity }: { rarity: Rarity }) {
+    const { label, filled, className } = RARITY[rarity];
+    return (
+        <span
+            className={cn("inline-flex items-center gap-1 rounded-full px-2 py-1", className)}
+            title={label}
+        >
+            {[0, 1, 2, 3].map((i) => (
+                <span
+                    key={i}
+                    aria-hidden="true"
+                    className={cn(
+                        "size-2.5 rounded-full border-[1.5px] border-current",
+                        i < filled ? "bg-current" : "bg-transparent opacity-40",
+                    )}
+                />
+            ))}
+            <span className="sr-only">{label}</span>
+        </span>
+    );
+}
 
 // A found species shows the user's own cover photo; one still to find is a grey
 // placeholder (name and rarity stay visible, so it doubles as a target list).
 export function SpeciesCard({ card }: { card: DexCard }) {
-    const rarity = RARITY[card.rarity];
-
     return (
         <li
             className={cn(
@@ -23,8 +47,8 @@ export function SpeciesCard({ card }: { card: DexCard }) {
         >
             <div
                 className={cn(
-                    "relative aspect-square",
-                    card.found ? "bg-muted" : "flex items-center justify-center",
+                    "relative flex aspect-square items-center justify-center",
+                    card.found && "bg-muted",
                 )}
             >
                 {card.found && card.thumbUrl ? (
@@ -38,10 +62,10 @@ export function SpeciesCard({ card }: { card: DexCard }) {
                         className="size-full object-cover"
                     />
                 ) : (
-                    <Leaf
-                        aria-hidden="true"
+                    <GroupIcon
+                        slug={card.groupSlug}
                         className={cn(
-                            "size-10",
+                            "size-12",
                             card.found ? "text-primary/40" : "text-muted-foreground/30",
                         )}
                     />
@@ -74,14 +98,7 @@ export function SpeciesCard({ card }: { card: DexCard }) {
                 ) : (
                     <p className="sr-only">Not found yet</p>
                 )}
-                <span
-                    className={cn(
-                        "inline-block rounded-full px-2 py-0.5 text-xs font-medium",
-                        rarity.className,
-                    )}
-                >
-                    {rarity.label}
-                </span>
+                <RarityPips rarity={card.rarity} />
             </div>
         </li>
     );

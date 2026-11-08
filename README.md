@@ -49,8 +49,8 @@ just a handful of emails per hour, which is why sign-in does not depend on email
 | Path                      | What it is                                                                                                                                         |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `app/`                    | Routes: landing, `/login`, `/setup` (dex wizard), `/dex`, `/auth/confirm`, `/auth/signout`; `manifest.ts` and `apple-icon.png` make it installable |
-| `lib/auth.ts`             | Password length rules shared by the sign-up form and its server action                                                                             |
 | `components/dex/`         | The dex grid: species card and the filterable browser                                                                                              |
+| `lib/auth.ts`             | Password length rules shared by the sign-up form and its server action                                                                             |
 | `lib/dex.ts`              | Pure helpers for dex counts, filtering and progress                                                                                                |
 | `lib/supabase/`           | Browser and server Supabase clients; session refresh used by `proxy.ts`                                                                            |
 | `proxy.ts`                | Refreshes the session on every request and redirects signed-out visitors to `/login`                                                               |

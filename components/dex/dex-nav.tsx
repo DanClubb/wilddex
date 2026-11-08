@@ -1,0 +1,23 @@
+import { LogOut, SlidersHorizontal } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+
+// Account actions, kept above the dex like navigation.
+export function DexNav() {
+    return (
+        <nav aria-label="Dex" className="flex items-center justify-between gap-2">
+            <Button asChild variant="default" size="sm" className="h-9">
+                <Link href="/setup">
+                    <SlidersHorizontal aria-hidden="true" />
+                    Edit dex settings
+                </Link>
+            </Button>
+            <form action="/auth/signout" method="post">
+                <Button type="submit" variant="destructive" size="sm" className="h-9">
+                    <LogOut aria-hidden="true" />
+                    Sign out
+                </Button>
+            </form>
+        </nav>
+    );
+}
