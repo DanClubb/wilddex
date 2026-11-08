@@ -71,6 +71,12 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
   (habitat, best time) is always visible as a hunting hint.
 - **Species pages** live at `/dex/<slug>`. A species outside the user's dex that they've never found
   is a 404; one they've found that has since left their dex still shows, with a note.
+- **Logging happens in a modal** on the species page, so you never leave it. Photos show in a swipeable
+  carousel. The date uses the shadcn calendar and the save progress uses the shadcn spinner.
+- **shadcn components were written by hand** (dialog, popover, calendar, carousel, spinner) because the
+  shadcn registry wasn't reachable from the build sandbox. Running `npx shadcn add <name>` locally will
+  replace them with the official radix-luma versions if you prefer. New dependencies: `embla-carousel-react`
+  (carousel engine) and `react-day-picker` (calendar engine), the same ones shadcn uses.
 - **Logging a sighting = first photo (required) + optional date, place and notes.** Later visits add
   photos only. Photos upload straight from the browser to storage, then a database function records them.
 
