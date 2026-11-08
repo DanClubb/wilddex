@@ -94,6 +94,10 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 - **Logging a sighting = first photo (required) + optional date, place and notes.** Later visits add
   photos only. Photos upload straight from the browser to storage, then a database function records them.
 
+- **Light / dark / system theme** (`next-themes`): a sun/moon menu on the dex and species pages. It
+  defaults to following the device, remembers the choice in the browser, and sets the `dark` class before
+  first paint so there's no flash. The choice is per device, not stored on the account.
+
 - **Navigation always gives feedback.** Tapping a found card dims it with a spinner, and the Back and
   Edit-settings links swap their icon for a spinner, using Next's `useLinkStatus`. (Not a full-page
   loading screen: that would stop the photo morph from pairing.)
