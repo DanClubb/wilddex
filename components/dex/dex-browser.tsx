@@ -11,6 +11,7 @@ import {
     type DexCard,
     type DexStatus,
 } from "@/lib/dex";
+import { LogSpeciesModal } from "./log-species-modal";
 import { SpeciesCard } from "./species-card";
 
 const STATUSES: { value: DexStatus; label: string }[] = [
@@ -21,7 +22,13 @@ const STATUSES: { value: DexStatus; label: string }[] = [
 
 // Filtering happens in the browser: the whole dex is a few hundred small
 // cards, so it is instant and needs no round trip.
-export function DexBrowser({ cards }: { cards: DexCard[] }) {
+export function DexBrowser({
+    cards,
+    userId,
+}: {
+    cards: DexCard[];
+    userId: string;
+}) {
     const [group, setGroup] = useState("all");
     const [status, setStatus] = useState<DexStatus>("all");
     const [query, setQuery] = useState("");
@@ -31,9 +38,13 @@ export function DexBrowser({ cards }: { cards: DexCard[] }) {
         () => filterCards(cards, { group, status, query }),
         [cards, group, status, query],
     );
-    const foundTotal = useMemo(() => cards.filter((c) => c.found).length, [cards]);
+    const foundTotal = useMemo(
+        () => cards.filter((c) => c.found).length,
+        [cards],
+    );
 
-    const filtering = group !== "all" || status !== "all" || query.trim() !== "";
+    const filtering =
+        group !== "all" || status !== "all" || query.trim() !== "";
     function clear() {
         setGroup("all");
         setStatus("all");
@@ -58,7 +69,10 @@ export function DexBrowser({ cards }: { cards: DexCard[] }) {
                     role="group"
                     aria-label="Species group"
                 >
-                    <Chip active={group === "all"} onClick={() => setGroup("all")}>
+                    <Chip
+                        active={group === "all"}
+                        onClick={() => setGroup("all")}
+                    >
                         All {foundTotal}/{cards.length}
                     </Chip>
                     {groups.map((g) => (
@@ -98,14 +112,21 @@ export function DexBrowser({ cards }: { cards: DexCard[] }) {
 
             {visible.length === 0 ? (
                 <div className="flex flex-col items-center gap-3 py-12 text-center">
-                    <SearchX aria-hidden="true" className="size-10 text-muted-foreground/50" />
+                    <SearchX
+                        aria-hidden="true"
+                        className="size-10 text-muted-foreground/50"
+                    />
                     <p className="text-muted-foreground">
                         {cards.length === 0
                             ? "Your dex is empty. Edit your dex settings to add some groups."
                             : "No species match."}
                     </p>
                     {filtering && (
-                        <Button variant="outline" className="h-11" onClick={clear}>
+                        <Button
+                            variant="outline"
+                            className="h-11"
+                            onClick={clear}
+                        >
                             Clear filters
                         </Button>
                     )}
@@ -117,6 +138,8 @@ export function DexBrowser({ cards }: { cards: DexCard[] }) {
                     ))}
                 </ul>
             )}
+
+            <LogSpeciesModal cards={cards} userId={userId} />
         </div>
     );
 }

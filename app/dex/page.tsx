@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { DexNav } from "@/components/dex/dex-nav";
+import { Progress } from "@/components/ui/progress";
 import { DexBrowser } from "@/components/dex/dex-browser";
 import { createClient } from "@/lib/supabase/server";
 import type { DexCard } from "@/lib/dex";
@@ -18,19 +19,27 @@ export default async function DexPage() {
     const claims = data?.claims;
     if (!claims) redirect("/login");
 
-    const [{ data: rows, error }, { data: profile }] = await Promise.all([
-        // my_dex is already limited to the user's chosen groups and regions.
-        // Supabase returns at most 1000 rows per request; once a dex can be bigger
-        // than that, page through it (or move the grid to an RPC).
-        supabase
-            .from("my_dex")
-            .select(
-                "species_id, common_name, scientific_name, group_slug, group_name, rarity, entry_id, cover_thumb_path",
-            )
-            .order("group_sort_order")
-            .order("common_name"),
-        supabase.from("profiles").select("dex_name").eq("id", claims.sub).maybeSingle(),
-    ]);
+    const [{ data: rows, error }, { data: profile }, { data: clueRows }] =
+        await Promise.all([
+            // my_dex is already limited to the user's chosen groups and regions.
+            // Supabase returns at most 1000 rows per request; once a dex can be bigger
+            // than that, page through it (or move the grid to an RPC).
+            supabase
+                .from("my_dex")
+                .select(
+                    "species_id, slug, common_name, scientific_name, group_slug, group_name, rarity, entry_id, cover_thumb_path",
+                )
+                .order("group_sort_order")
+                .order("common_name"),
+            supabase
+                .from("profiles")
+                .select("dex_name")
+                .eq("id", claims.sub)
+                .maybeSingle(),
+            // Hunting clues live on the species table (public reference data).
+            supabase.from("species").select("id, habitat, best_time"),
+        ]);
+    const clues = new Map((clueRows ?? []).map((c) => [c.id, c]));
 
     // No profile means the setup wizard has not been finished yet.
     if (!profile) redirect("/setup");
@@ -56,6 +65,7 @@ export default async function DexPage() {
     for (const r of rows ?? []) {
         if (
             r.species_id == null ||
+            !r.slug ||
             !r.common_name ||
             !r.group_slug ||
             !r.group_name ||
@@ -64,12 +74,15 @@ export default async function DexPage() {
             continue;
         cards.push({
             speciesId: r.species_id,
+            slug: r.slug,
             name: r.common_name,
             scientificName: r.scientific_name ?? "",
             groupSlug: r.group_slug,
             groupName: r.group_name,
             rarity: r.rarity,
             found: r.entry_id != null,
+            habitat: clues.get(r.species_id)?.habitat ?? null,
+            bestTime: clues.get(r.species_id)?.best_time ?? null,
             thumbUrl: r.cover_thumb_path
                 ? (urlByPath.get(r.cover_thumb_path) ?? null)
                 : null,
@@ -88,19 +101,11 @@ export default async function DexPage() {
                     {profile.dex_name ?? "Your WildDex"}
                 </h1>
                 <div className="space-y-1.5">
-                    <div
-                        role="progressbar"
+                    <Progress
+                        value={percent}
                         aria-label="Species found"
-                        aria-valuemin={0}
-                        aria-valuemax={cards.length}
-                        aria-valuenow={found}
-                        className="h-2.5 overflow-hidden rounded-full bg-muted"
-                    >
-                        <div
-                            className="h-full rounded-full bg-primary transition-[width]"
-                            style={{ width: `${percent}%` }}
-                        />
-                    </div>
+                        className="h-2.5"
+                    />
                     <p className="text-sm text-muted-foreground">
                         <span className="font-semibold text-foreground">
                             {found} of {cards.length}
@@ -110,7 +115,7 @@ export default async function DexPage() {
                 </div>
             </header>
 
-            <DexBrowser cards={cards} />
+            <DexBrowser cards={cards} userId={claims.sub} />
         </main>
     );
 }

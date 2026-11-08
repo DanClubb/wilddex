@@ -156,3 +156,19 @@
     @apply font-sans;
   }
 }
+/* View transitions: the photo morphs between the log modal / grid and the species page. */
+::view-transition-group(.morph) {
+  animation-duration: 400ms;
+}
+/* Let clicks through to the live page while a transition runs. */
+::view-transition {
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

@@ -38,6 +38,7 @@ export type Rarity = "common" | "uncommon" | "rare" | "legendary";
 // One card in the dex grid: a species in the user's dex, found or not.
 export type DexCard = {
     speciesId: number;
+    slug: string;
     name: string;
     scientificName: string;
     groupSlug: string;
@@ -45,6 +46,8 @@ export type DexCard = {
     rarity: Rarity;
     found: boolean;
     thumbUrl: string | null; // signed URL of the cover photo, when found
+    habitat: string | null; // hunting clues, shown in the log modal
+    bestTime: string | null;
 };
 
 export type DexStatus = "all" | "found" | "missing";

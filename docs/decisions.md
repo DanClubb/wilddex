@@ -64,6 +64,35 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
   `<img>` rather than `next/image`.
 - **Rarity colours are theme tokens** (`--rarity-*` in `globals.css`, light and dark), not hard-coded
   in components.
+- **Photos are resized in the browser** before upload (2000px full, 400px thumbnail, JPEG), so the
+  10 MB cap is never a problem for users. Re-encoding through a canvas also strips EXIF, so the GPS
+  location in a phone photo never leaves the device.
+- **Species info is revealed by finding the species.** The summary shows once found; "where to look"
+  (habitat, best time) is always visible as a hunting hint.
+- **Species pages** live at `/dex/<slug>`. A species outside the user's dex that they've never found
+  is a 404; one they've found that has since left their dex still shows, with a note.
+- **Logging happens in a modal on the dex grid.** Tapping a species still to find opens it at
+  `/dex?log=<slug>` (shareable; back/Escape close it). It uses the browser History API rather than
+  an intercepting route: simpler, no extra request to open, and the grid keeps its filters and scroll.
+  Once logged, it navigates to `/dex/<slug>` and the first photo morphs into the species page's photo
+  (React `ViewTransition`). Found species skip the modal and go straight to their page.
+- **The species page also has a log/add-photos modal** (for adding more photos later).
+- **Logging happens in a modal** on the species page, so you never leave it. Photos show in a swipeable
+  carousel. The date uses the shadcn calendar and the save progress uses the shadcn spinner.
+- **UI components are the official shadcn (radix-luma) ones**, added locally with `npx shadcn add`
+  (the build sandbox can't reach the shadcn registry). They import `cn` from the `cn` package, which is
+  shadcn's own. `components/ui` is generated code: lint rules that fight it are relaxed in `eslint.config.mjs`.
+  Hand-made exceptions: `input.tsx` (16px text so iOS doesn't zoom) and `date-picker.tsx` (shadcn's
+  popover + calendar recipe).
+- **Photo management on the species page:** each photo has a menu (set as cover, delete with a
+  confirmation) and the sighting card has Edit (date, place, notes). Deleting the last photo removes the
+  species from the collection (the database does this), so the confirmation warns about it. Changes
+  show toasts (sonner).
+- **Log modal shows the species' hunting clues** (habitat, best time) beside "?" icons.
+- **No loading skeleton on `/dex/[slug]` on purpose:** a loading boundary there would stop the photo
+  morph from pairing with the modal's preview.
+- **Logging a sighting = first photo (required) + optional date, place and notes.** Later visits add
+  photos only. Photos upload straight from the browser to storage, then a database function records them.
 
 ## Deliberately later (not MVP)
 
