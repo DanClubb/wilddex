@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      dex_shares: {
+        Row: {
+          created_at: string
+          show_details: boolean
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          show_details?: boolean
+          token?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          show_details?: boolean
+          token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       entries: {
         Row: {
           created_at: string
@@ -365,6 +386,13 @@ export type Database = {
         }
         Returns: undefined
       }
+      is_shared_photo: { Args: { p_name: string }; Returns: boolean }
+      set_sharing: {
+        Args: { p_enabled: boolean; p_show_details?: boolean }
+        Returns: string
+      }
+      shared_dex: { Args: { p_token: string }; Returns: Json }
+      shared_species: { Args: { p_token: string; p_slug: string }; Returns: Json }
       set_cover_photo: { Args: { p_photo_id: string }; Returns: undefined }
       species_page: { Args: { p_slug: string }; Returns: Json }
     }

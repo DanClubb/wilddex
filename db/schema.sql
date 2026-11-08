@@ -469,6 +469,117 @@ create policy "own photo files: delete" on storage.objects for delete to authent
 
 
 -- -----------------------------------------------------------------------------
+-- 4c. Sharing a read-only dex
+--
+-- A row in dex_shares means "this user's dex is shared"; deleting it turns
+-- sharing off (switching it on again makes a NEW link, so old links stay dead).
+-- Nobody writes the table directly: set_sharing() does it, so tokens are always
+-- server-generated. Visitors without an account use shared_dex() and
+-- shared_species(): security definer functions that only answer for a valid token,
+-- and only reveal found species (plus the dex list, where unfound species show
+-- as names only). notes and place text are included only if the owner chose to.
+-- -----------------------------------------------------------------------------
+create table public.dex_shares (
+  user_id      uuid primary key references public.profiles (id) on delete cascade,
+  token        uuid not null unique default gen_random_uuid(),
+  show_details boolean not null default false,   -- include notes and place text
+  created_at   timestamptz not null default now()
+);
+alter table public.dex_shares enable row level security;
+grant select on public.dex_shares to authenticated;
+create policy "own share: read" on public.dex_shares for select to authenticated
+  using (user_id = (select auth.uid()));
+
+create function public.set_sharing(p_enabled boolean, p_show_details boolean default false)
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_uid   uuid := auth.uid();
+  v_token uuid;
+begin
+  if v_uid is null then
+    raise exception 'not signed in' using errcode = '28000';
+  end if;
+  if not p_enabled then
+    delete from public.dex_shares where user_id = v_uid;
+    return null;
+  end if;
+  insert into public.dex_shares (user_id, show_details)
+  values (v_uid, p_show_details)
+  on conflict (user_id) do update set show_details = excluded.show_details
+  returning token into v_token;
+  return v_token;
+end;
+$$;
+
+-- The shared dex list: same rows and rarity rules as my_dex, for the share's owner.
+create function public.shared_dex(p_token uuid) returns jsonb
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  with owner as (
+    select sh.user_id, p.dex_name
+    from public.dex_shares sh
+    join public.profiles p on p.id = sh.user_id
+    where sh.token = p_token
+  ),
+  listed as (
+    select
+      s.slug, s.common_name, s.scientific_name,
+      g.slug as group_slug, g.name as group_name, g.sort_order as group_sort_order,
+      (enum_range(null::public.rarity_tier))[
+        round(avg(array_position(enum_range(null::public.rarity_tier), sr.rarity)))::int
+      ] as rarity,
+      e.id as entry_id,
+      cp.thumb_path
+    from owner o
+    join public.user_dex_groups  udg on udg.user_id = o.user_id
+    join public.user_dex_regions udr on udr.user_id = o.user_id
+    join public.species s            on s.group_id = udg.group_id and s.is_active
+    join public.groups g             on g.id = s.group_id
+    join public.species_regions sr   on sr.species_id = s.id and sr.region_id = udr.region_id
+    left join public.entries e       on e.species_id = s.id and e.user_id = o.user_id
+    left join public.entry_photos cp on cp.entry_id = e.id and cp.is_cover
+    group by s.id, g.id, e.id, cp.id
+  )
+  select jsonb_build_object(
+    'dex_name', (select dex_name from owner),
+    'species', coalesce((
+      select jsonb_agg(
+        jsonb_build_object(
+          'slug', slug,
+          'common_name', common_name,
+          'scientific_name', case when entry_id is not null then scientific_name end,
+          'group_slug', group_slug,
+          'group_name', group_name,
+          'rarity', rarity,
+          'found', entry_id is not null,
+          'cover_thumb_path', thumb_path
+        )
+        order by group_sort_order, common_name
+      )
+      from listed
+    ), '[]'::jsonb)
+  )
+  where exists (select 1 from owner)
+$$;
+
+-- One found species on a shared dex. Null for an invalid token, an unknown slug,
+-- or a species the owner hasn't found.
+create function public.shared_species(p_token uuid, p_slug text) returns jsonb
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select jsonb_build_object(
+    'dex_name', p.dex_name,
+    'species', jsonb_build_object(
 -- 4b. The species page as one query
 --
 -- The species, its rarity for this user, their entry (if any) and the entry's
@@ -493,6 +604,66 @@ as $$
       'group_slug', g.slug,
       'group_name', g.name
     ),
+    'rarity', (
+      select (enum_range(null::public.rarity_tier))[
+        round(avg(array_position(enum_range(null::public.rarity_tier), sr.rarity)))::int
+      ]
+      from public.species_regions sr
+      join public.user_dex_regions udr
+        on udr.region_id = sr.region_id and udr.user_id = sh.user_id
+      where sr.species_id = s.id
+    ),
+    'entry', jsonb_build_object(
+      'first_seen_on', e.first_seen_on,
+      'location_text', case when sh.show_details then e.location_text end,
+      'notes', case when sh.show_details then e.notes end
+    ),
+    'photos', coalesce((
+      select jsonb_agg(
+        jsonb_build_object('id', ph.id, 'storage_path', ph.storage_path, 'is_cover', ph.is_cover)
+        order by ph.is_cover desc, ph.created_at, ph.id
+      )
+      from public.entry_photos ph
+      where ph.entry_id = e.id
+    ), '[]'::jsonb)
+  )
+  from public.dex_shares sh
+  join public.profiles p on p.id = sh.user_id
+  join public.species s  on s.slug = p_slug
+  join public.groups g   on g.id = s.group_id
+  join public.entries e  on e.species_id = s.id and e.user_id = sh.user_id
+  where sh.token = p_token
+$$;
+
+-- Lets the storage policy below ask "is this file one of a shared dex's photos?"
+-- (a policy can't read dex_shares itself: visitors have no access to it).
+create function public.is_shared_photo(p_name text) returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1
+    from public.entry_photos ph
+    join public.dex_shares sh on sh.user_id = ph.user_id
+    where ph.storage_path = p_name or ph.thumb_path = p_name
+  )
+$$;
+
+-- With this, a visitor's server request can create a short-lived link for a
+-- shared photo. File names are random UUIDs, so they can't be guessed.
+create policy "shared photo files: read" on storage.objects for select to anon, authenticated
+  using (bucket_id = 'entry-photos' and public.is_shared_photo(name));
+
+revoke execute on function public.set_sharing(boolean, boolean) from public, anon;
+revoke execute on function public.shared_dex(uuid)              from public;
+revoke execute on function public.shared_species(uuid, text)    from public;
+revoke execute on function public.is_shared_photo(text)         from public;
+grant  execute on function public.set_sharing(boolean, boolean) to authenticated;
+grant  execute on function public.shared_dex(uuid)              to anon, authenticated;
+grant  execute on function public.shared_species(uuid, text)    to anon, authenticated;
+grant  execute on function public.is_shared_photo(text)         to anon, authenticated;
     'rarity', d.rarity,
     'entry', case when e.id is null then null else jsonb_build_object(
       'id', e.id,
