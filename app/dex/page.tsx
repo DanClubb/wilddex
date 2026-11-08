@@ -112,7 +112,7 @@ export default async function DexPage() {
                 </div>
             </header>
 
-            <DexBrowser cards={cards} />
+            <DexBrowser cards={cards} userId={claims.sub} />
         </main>
     );
 }

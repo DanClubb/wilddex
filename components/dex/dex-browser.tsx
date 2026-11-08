@@ -11,6 +11,7 @@ import {
     type DexCard,
     type DexStatus,
 } from "@/lib/dex";
+import { LogSpeciesModal } from "./log-species-modal";
 import { SpeciesCard } from "./species-card";
 
 const STATUSES: { value: DexStatus; label: string }[] = [
@@ -21,7 +22,7 @@ const STATUSES: { value: DexStatus; label: string }[] = [
 
 // Filtering happens in the browser: the whole dex is a few hundred small
 // cards, so it is instant and needs no round trip.
-export function DexBrowser({ cards }: { cards: DexCard[] }) {
+export function DexBrowser({ cards, userId }: { cards: DexCard[]; userId: string }) {
     const [group, setGroup] = useState("all");
     const [status, setStatus] = useState<DexStatus>("all");
     const [query, setQuery] = useState("");
@@ -117,6 +118,8 @@ export function DexBrowser({ cards }: { cards: DexCard[] }) {
                     ))}
                 </ul>
             )}
+
+            <LogSpeciesModal cards={cards} userId={userId} />
         </div>
     );
 }

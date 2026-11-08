@@ -71,6 +71,12 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
   (habitat, best time) is always visible as a hunting hint.
 - **Species pages** live at `/dex/<slug>`. A species outside the user's dex that they've never found
   is a 404; one they've found that has since left their dex still shows, with a note.
+- **Logging happens in a modal on the dex grid.** Tapping a species still to find opens it at
+  `/dex?log=<slug>` (shareable; back/Escape close it). It uses the browser History API rather than
+  an intercepting route: simpler, no extra request to open, and the grid keeps its filters and scroll.
+  Once logged, it navigates to `/dex/<slug>` and the first photo morphs into the species page's photo
+  (React `ViewTransition`). Found species skip the modal and go straight to their page.
+- **The species page also has a log/add-photos modal** (for adding more photos later).
 - **Logging happens in a modal** on the species page, so you never leave it. Photos show in a swipeable
   carousel. The date uses the shadcn calendar and the save progress uses the shadcn spinner.
 - **shadcn components were written by hand** (dialog, popover, calendar, carousel, spinner) because the
