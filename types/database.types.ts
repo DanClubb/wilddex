@@ -14,230 +14,239 @@ export type Database = {
   }
   public: {
     Tables: {
-      categories: {
+      entries: {
         Row: {
-          description: string | null
-          display_order: number
-          icon: string
+          created_at: string
+          first_seen_on: string
           id: string
-          is_optional: boolean
-          name: string
-          slug: string
+          location_text: string | null
+          notes: string | null
+          species_id: number
+          user_id: string
         }
         Insert: {
-          description?: string | null
-          display_order: number
-          icon: string
+          created_at?: string
+          first_seen_on?: string
           id?: string
-          is_optional?: boolean
-          name: string
-          slug: string
+          location_text?: string | null
+          notes?: string | null
+          species_id: number
+          user_id: string
         }
         Update: {
-          description?: string | null
-          display_order?: number
-          icon?: string
+          created_at?: string
+          first_seen_on?: string
           id?: string
-          is_optional?: boolean
+          location_text?: string | null
+          notes?: string | null
+          species_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entries_species_id_fkey"
+            columns: ["species_id"]
+            isOneToOne: false
+            referencedRelation: "my_dex"
+            referencedColumns: ["species_id"]
+          },
+          {
+            foreignKeyName: "entries_species_id_fkey"
+            columns: ["species_id"]
+            isOneToOne: false
+            referencedRelation: "species"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "entries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      entry_photos: {
+        Row: {
+          created_at: string
+          entry_id: string
+          id: string
+          is_cover: boolean
+          storage_path: string
+          thumb_path: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_id: string
+          id?: string
+          is_cover?: boolean
+          storage_path: string
+          thumb_path: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_id?: string
+          id?: string
+          is_cover?: boolean
+          storage_path?: string
+          thumb_path?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entry_photos_entry_id_user_id_fkey"
+            columns: ["entry_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "entries"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          default_selected: boolean
+          id: number
+          name: string
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          default_selected?: boolean
+          id?: never
+          name: string
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          default_selected?: boolean
+          id?: never
           name?: string
           slug?: string
-        }
-        Relationships: []
-      }
-      custom_species: {
-        Row: {
-          category_id: string | null
-          common_name: string
-          created_at: string
-          description: string | null
-          id: string
-          scientific_name: string | null
-          user_id: string
-        }
-        Insert: {
-          category_id?: string | null
-          common_name: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          scientific_name?: string | null
-          user_id: string
-        }
-        Update: {
-          category_id?: string | null
-          common_name?: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          scientific_name?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "custom_species_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "categories"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      dex_categories: {
-        Row: {
-          added_at: string
-          category_id: string
-          dex_id: string
-          id: string
-        }
-        Insert: {
-          added_at?: string
-          category_id: string
-          dex_id: string
-          id?: string
-        }
-        Update: {
-          added_at?: string
-          category_id?: string
-          dex_id?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "dex_categories_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "categories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "dex_categories_dex_id_fkey"
-            columns: ["dex_id"]
-            isOneToOne: false
-            referencedRelation: "dexes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      dexes: {
-        Row: {
-          bird_full_list: boolean
-          created_at: string
-          id: string
-          name: string
-          scope_england: boolean
-          scope_northern_ireland: boolean
-          scope_scotland: boolean
-          scope_wales: boolean
-          show_unspotted: boolean
-          user_id: string
-        }
-        Insert: {
-          bird_full_list?: boolean
-          created_at?: string
-          id?: string
-          name: string
-          scope_england?: boolean
-          scope_northern_ireland?: boolean
-          scope_scotland?: boolean
-          scope_wales?: boolean
-          show_unspotted?: boolean
-          user_id: string
-        }
-        Update: {
-          bird_full_list?: boolean
-          created_at?: string
-          id?: string
-          name?: string
-          scope_england?: boolean
-          scope_northern_ireland?: boolean
-          scope_scotland?: boolean
-          scope_wales?: boolean
-          show_unspotted?: boolean
-          user_id?: string
+          sort_order?: number
         }
         Relationships: []
       }
       profiles: {
         Row: {
-          avatar_url: string | null
           created_at: string
+          dex_name: string | null
           id: string
-          username: string
         }
         Insert: {
-          avatar_url?: string | null
           created_at?: string
+          dex_name?: string | null
           id: string
-          username: string
         }
         Update: {
-          avatar_url?: string | null
           created_at?: string
+          dex_name?: string | null
           id?: string
-          username?: string
         }
         Relationships: []
       }
-      sightings: {
+      regions: {
         Row: {
-          created_at: string
-          custom_species_id: string | null
-          date_spotted: string
-          dex_id: string
-          id: string
-          latitude: number | null
-          location_name: string | null
-          longitude: number | null
-          notes: string | null
-          photo_url: string | null
-          species_id: string | null
-          user_id: string
+          id: number
+          name: string
+          slug: string
+          sort_order: number
         }
         Insert: {
-          created_at?: string
-          custom_species_id?: string | null
-          date_spotted: string
-          dex_id: string
-          id?: string
-          latitude?: number | null
-          location_name?: string | null
-          longitude?: number | null
-          notes?: string | null
-          photo_url?: string | null
-          species_id?: string | null
-          user_id: string
+          id?: never
+          name: string
+          slug: string
+          sort_order?: number
         }
         Update: {
+          id?: never
+          name?: string
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      species: {
+        Row: {
+          best_time: string | null
+          common_name: string
+          created_at: string
+          group_id: number
+          habitat: string | null
+          id: number
+          is_active: boolean
+          scientific_name: string
+          slug: string
+          summary: string
+        }
+        Insert: {
+          best_time?: string | null
+          common_name: string
           created_at?: string
-          custom_species_id?: string | null
-          date_spotted?: string
-          dex_id?: string
-          id?: string
-          latitude?: number | null
-          location_name?: string | null
-          longitude?: number | null
-          notes?: string | null
-          photo_url?: string | null
-          species_id?: string | null
-          user_id?: string
+          group_id: number
+          habitat?: string | null
+          id?: never
+          is_active?: boolean
+          scientific_name: string
+          slug: string
+          summary: string
+        }
+        Update: {
+          best_time?: string | null
+          common_name?: string
+          created_at?: string
+          group_id?: number
+          habitat?: string | null
+          id?: never
+          is_active?: boolean
+          scientific_name?: string
+          slug?: string
+          summary?: string
         }
         Relationships: [
           {
-            foreignKeyName: "sightings_custom_species_id_fkey"
-            columns: ["custom_species_id"]
+            foreignKeyName: "species_group_id_fkey"
+            columns: ["group_id"]
             isOneToOne: false
-            referencedRelation: "custom_species"
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      species_regions: {
+        Row: {
+          rarity: Database["public"]["Enums"]["rarity_tier"]
+          region_id: number
+          species_id: number
+        }
+        Insert: {
+          rarity: Database["public"]["Enums"]["rarity_tier"]
+          region_id: number
+          species_id: number
+        }
+        Update: {
+          rarity?: Database["public"]["Enums"]["rarity_tier"]
+          region_id?: number
+          species_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "species_regions_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "regions"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "sightings_dex_id_fkey"
-            columns: ["dex_id"]
+            foreignKeyName: "species_regions_species_id_fkey"
+            columns: ["species_id"]
             isOneToOne: false
-            referencedRelation: "dexes"
-            referencedColumns: ["id"]
+            referencedRelation: "my_dex"
+            referencedColumns: ["species_id"]
           },
           {
-            foreignKeyName: "sightings_species_id_fkey"
+            foreignKeyName: "species_regions_species_id_fkey"
             columns: ["species_id"]
             isOneToOne: false
             referencedRelation: "species"
@@ -245,77 +254,121 @@ export type Database = {
           },
         ]
       }
-      species: {
+      user_dex_groups: {
         Row: {
-          category_id: string
-          common_name: string
-          created_at: string
-          description: string | null
-          found_in_england: boolean
-          found_in_northern_ireland: boolean
-          found_in_scotland: boolean
-          found_in_wales: boolean
-          habitat: string | null
-          id: string
-          rarity_tier: string
-          scientific_name: string
-          slug: string
-          status: string
-          thumbnail_url: string | null
+          group_id: number
+          user_id: string
         }
         Insert: {
-          category_id: string
-          common_name: string
-          created_at?: string
-          description?: string | null
-          found_in_england?: boolean
-          found_in_northern_ireland?: boolean
-          found_in_scotland?: boolean
-          found_in_wales?: boolean
-          habitat?: string | null
-          id?: string
-          rarity_tier?: string
-          scientific_name: string
-          slug: string
-          status: string
-          thumbnail_url?: string | null
+          group_id: number
+          user_id: string
         }
         Update: {
-          category_id?: string
-          common_name?: string
-          created_at?: string
-          description?: string | null
-          found_in_england?: boolean
-          found_in_northern_ireland?: boolean
-          found_in_scotland?: boolean
-          found_in_wales?: boolean
-          habitat?: string | null
-          id?: string
-          rarity_tier?: string
-          scientific_name?: string
-          slug?: string
-          status?: string
-          thumbnail_url?: string | null
+          group_id?: number
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "species_category_id_fkey"
-            columns: ["category_id"]
+            foreignKeyName: "user_dex_groups_group_id_fkey"
+            columns: ["group_id"]
             isOneToOne: false
-            referencedRelation: "categories"
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_dex_groups_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_dex_regions: {
+        Row: {
+          region_id: number
+          user_id: string
+        }
+        Insert: {
+          region_id: number
+          user_id: string
+        }
+        Update: {
+          region_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_dex_regions_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "regions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_dex_regions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      my_dex: {
+        Row: {
+          common_name: string | null
+          cover_photo_id: string | null
+          cover_storage_path: string | null
+          cover_thumb_path: string | null
+          entry_id: string | null
+          first_seen_on: string | null
+          group_name: string | null
+          group_slug: string | null
+          group_sort_order: number | null
+          location_text: string | null
+          rarity: Database["public"]["Enums"]["rarity_tier"] | null
+          scientific_name: string | null
+          slug: string | null
+          species_id: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      add_entry_photo: {
+        Args: {
+          p_entry_id: string
+          p_storage_path: string
+          p_thumb_path: string
+        }
+        Returns: string
+      }
+      delete_entry_photo: { Args: { p_photo_id: string }; Returns: string[] }
+      log_entry: {
+        Args: {
+          p_first_seen_on: string
+          p_location_text: string
+          p_notes: string
+          p_species_id: number
+          p_storage_path: string
+          p_thumb_path: string
+        }
+        Returns: string
+      }
+      save_dex_settings: {
+        Args: {
+          p_dex_name: string
+          p_group_ids: number[]
+          p_region_ids: number[]
+        }
+        Returns: undefined
+      }
+      set_cover_photo: { Args: { p_photo_id: string }; Returns: undefined }
     }
     Enums: {
-      [_ in never]: never
+      rarity_tier: "common" | "uncommon" | "rare" | "legendary"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -331,12 +384,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -360,11 +413,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -385,11 +438,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -410,11 +463,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -427,11 +480,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -442,6 +495,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      rarity_tier: ["common", "uncommon", "rare", "legendary"],
+    },
   },
 } as const
