@@ -21,6 +21,8 @@ export const metadata: Metadata = {
   title: "WildDex",
   description:
     "A real-life Pokédex for UK wildlife. Find it, photograph it, collect it.",
+  // iOS ignores parts of the manifest, so it needs these too to run full-screen.
+  appleWebApp: { capable: true, title: "WildDex", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
@@ -28,6 +30,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   // Lets the layout use the full screen on phones with a notch or home bar.
   viewportFit: "cover",
+  themeColor: "#15803d",
 };
 
 export default function RootLayout({
