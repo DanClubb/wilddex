@@ -1,6 +1,7 @@
 import { LogOut, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { PendingIcon } from "./link-pending";
 
 // Account actions, kept above the dex like navigation.
 export function DexNav() {
@@ -11,7 +12,9 @@ export function DexNav() {
         >
             <Button asChild variant="default" size="sm" className="h-9">
                 <Link href="/setup">
-                    <SlidersHorizontal aria-hidden="true" />
+                    <PendingIcon>
+                        <SlidersHorizontal aria-hidden="true" />
+                    </PendingIcon>
                     Edit dex settings
                 </Link>
             </Button>

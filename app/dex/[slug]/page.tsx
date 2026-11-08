@@ -1,7 +1,8 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ViewTransition } from "react";
+import { cache, ViewTransition } from "react";
+import { PendingIcon } from "@/components/dex/link-pending";
 import { EditSighting } from "@/components/dex/edit-sighting";
 import { PhotoCarousel } from "@/components/dex/photo-carousel";
 import { PhotoUploader } from "@/components/dex/photo-uploader";
@@ -16,15 +17,39 @@ const PHOTO_LINK_SECONDS = 60 * 60;
 
 type Props = { params: Promise<{ slug: string }> };
 
+type SpeciesPageData = {
+    species: {
+        id: number;
+        common_name: string;
+        scientific_name: string;
+        summary: string;
+        habitat: string | null;
+        best_time: string | null;
+        group_slug: string;
+        group_name: string;
+    };
+    rarity: Rarity | null; // null when the species isn't in the user's dex
+    entry: {
+        id: string;
+        first_seen_on: string;
+        location_text: string | null;
+        notes: string | null;
+    } | null;
+    photos: { id: string; storage_path: string; is_cover: boolean }[];
+};
+
+// One database round trip for everything on the page. cache() lets the page and
+// generateMetadata share the result instead of asking twice.
+const getSpeciesPage = cache(async (slug: string) => {
+    const supabase = await createClient();
+    const { data } = await supabase.rpc("species_page", { p_slug: slug });
+    return data as SpeciesPageData | null;
+});
+
 export async function generateMetadata({ params }: Props) {
     const { slug } = await params;
-    const supabase = await createClient();
-    const { data } = await supabase
-        .from("species")
-        .select("common_name")
-        .eq("slug", slug)
-        .maybeSingle();
-    return { title: data?.common_name ?? "Species" };
+    const data = await getSpeciesPage(slug);
+    return { title: data?.species.common_name ?? "Species" };
 }
 
 function formatDate(iso: string) {
@@ -42,60 +67,33 @@ export default async function SpeciesPage({ params }: Props) {
     const { slug } = await params;
     const supabase = await createClient();
 
-    const { data } = await supabase.auth.getClaims();
-    const claims = data?.claims;
-    if (!claims) redirect("/login");
-
-    const { data: species } = await supabase
-        .from("species")
-        .select(
-            "id, common_name, scientific_name, summary, habitat, best_time, groups(slug, name)",
-        )
-        .eq("slug", slug)
-        .maybeSingle();
-    if (!species) notFound();
-
-    const [{ data: dexRow }, { data: entry }] = await Promise.all([
-        supabase
-            .from("my_dex")
-            .select("rarity")
-            .eq("species_id", species.id)
-            .maybeSingle(),
-        supabase
-            .from("entries")
-            .select("id, first_seen_on, location_text, notes")
-            .eq("species_id", species.id)
-            .maybeSingle(),
+    // Independent of each other, so they run at the same time.
+    const [{ data: auth }, page] = await Promise.all([
+        supabase.auth.getClaims(),
+        getSpeciesPage(slug),
     ]);
+    const claims = auth?.claims;
+    if (!claims) redirect("/login");
+    if (!page) notFound();
 
+    const { species, entry, photos } = page;
     // Not in this user's dex and never found: there is nothing to show.
-    if (!dexRow && !entry) notFound();
+    if (!page.rarity && !entry) notFound();
 
-    const photos = entry
-        ? ((
-              await supabase
-                  .from("entry_photos")
-                  .select("id, storage_path, thumb_path, is_cover")
-                  .eq("entry_id", entry.id)
-                  .order("is_cover", { ascending: false })
-                  .order("created_at")
-          ).data ?? [])
-        : [];
-
-    const paths = photos.map((p) => p.storage_path);
-    const signed = paths.length
-        ? await supabase.storage
-              .from("entry-photos")
-              .createSignedUrls(paths, PHOTO_LINK_SECONDS)
+    const signed = photos.length
+        ? await supabase.storage.from("entry-photos").createSignedUrls(
+              photos.map((p) => p.storage_path),
+              PHOTO_LINK_SECONDS,
+          )
         : { data: [] };
     const urlByPath = new Map<string, string>();
     for (const s of signed.data ?? []) {
         if (s.path && s.signedUrl) urlByPath.set(s.path, s.signedUrl);
     }
 
-    const group = species.groups;
+    const group = { slug: species.group_slug, name: species.group_name };
     const found = !!entry;
-    const rarity = (dexRow?.rarity ?? null) as Rarity | null;
+    const rarity = page.rarity;
 
     return (
         <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pt-6 pb-12">
@@ -104,12 +102,14 @@ export default async function SpeciesPage({ params }: Props) {
                 transitionTypes={["nav-back"]}
                 className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
             >
-                <ArrowLeft aria-hidden="true" className="size-4" />
+                <PendingIcon>
+                    <ArrowLeft aria-hidden="true" className="size-4" />
+                </PendingIcon>
                 Back to your dex
             </Link>
 
             <header className="space-y-2">
-                <p className="text-sm text-muted-foreground">{group?.name}</p>
+                <p className="text-sm text-muted-foreground">{group.name}</p>
                 <h1 className="font-heading text-3xl font-bold">
                     {species.common_name}
                 </h1>
@@ -155,7 +155,7 @@ export default async function SpeciesPage({ params }: Props) {
             ) : (
                 <div className="flex aspect-4/3 items-center justify-center rounded-3xl bg-muted">
                     <GroupIcon
-                        slug={group?.slug ?? ""}
+                        slug={group.slug}
                         className="size-16 text-muted-foreground/30"
                     />
                 </div>
