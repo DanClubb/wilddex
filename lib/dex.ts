@@ -38,6 +38,7 @@ export type Rarity = "common" | "uncommon" | "rare" | "legendary";
 // One card in the dex grid: a species in the user's dex, found or not.
 export type DexCard = {
     speciesId: number;
+    slug: string;
     name: string;
     scientificName: string;
     groupSlug: string;

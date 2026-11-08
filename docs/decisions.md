@@ -64,6 +64,15 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
   `<img>` rather than `next/image`.
 - **Rarity colours are theme tokens** (`--rarity-*` in `globals.css`, light and dark), not hard-coded
   in components.
+- **Photos are resized in the browser** before upload (2000px full, 400px thumbnail, JPEG), so the
+  10 MB cap is never a problem for users. Re-encoding through a canvas also strips EXIF, so the GPS
+  location in a phone photo never leaves the device.
+- **Species info is revealed by finding the species.** The summary shows once found; "where to look"
+  (habitat, best time) is always visible as a hunting hint.
+- **Species pages** live at `/dex/<slug>`. A species outside the user's dex that they've never found
+  is a 404; one they've found that has since left their dex still shows, with a note.
+- **Logging a sighting = first photo (required) + optional date, place and notes.** Later visits add
+  photos only. Photos upload straight from the browser to storage, then a database function records them.
 
 ## Deliberately later (not MVP)
 
@@ -73,6 +82,9 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 - A custom email sender (SMTP) before turning on email confirmation or adding password reset
 
 ## Open items
+
+- **Photo management** (change cover, delete photos, edit notes and date) has database support but no
+  screens yet; it is the next step.
 
 - **Delete my account** must also remove the user's photo files from storage (database rows cascade,
   files do not). Needed before other people use the app.

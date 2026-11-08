@@ -25,7 +25,7 @@ export default async function DexPage() {
         supabase
             .from("my_dex")
             .select(
-                "species_id, common_name, scientific_name, group_slug, group_name, rarity, entry_id, cover_thumb_path",
+                "species_id, slug, common_name, scientific_name, group_slug, group_name, rarity, entry_id, cover_thumb_path",
             )
             .order("group_sort_order")
             .order("common_name"),
@@ -56,6 +56,7 @@ export default async function DexPage() {
     for (const r of rows ?? []) {
         if (
             r.species_id == null ||
+            !r.slug ||
             !r.common_name ||
             !r.group_slug ||
             !r.group_name ||
@@ -64,6 +65,7 @@ export default async function DexPage() {
             continue;
         cards.push({
             speciesId: r.species_id,
+            slug: r.slug,
             name: r.common_name,
             scientificName: r.scientific_name ?? "",
             groupSlug: r.group_slug,

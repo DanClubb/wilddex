@@ -46,19 +46,20 @@ just a handful of emails per hour, which is why sign-in does not depend on email
 
 ## Project layout
 
-| Path                      | What it is                                                                                                                                         |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `app/`                    | Routes: landing, `/login`, `/setup` (dex wizard), `/dex`, `/auth/confirm`, `/auth/signout`; `manifest.ts` and `apple-icon.png` make it installable |
-| `components/dex/`         | The dex grid: species card and the filterable browser                                                                                              |
-| `lib/auth.ts`             | Password length rules shared by the sign-up form and its server action                                                                             |
-| `lib/dex.ts`              | Pure helpers for dex counts, filtering and progress                                                                                                |
-| `lib/supabase/`           | Browser and server Supabase clients; session refresh used by `proxy.ts`                                                                            |
-| `proxy.ts`                | Refreshes the session on every request and redirects signed-out visitors to `/login`                                                               |
-| `types/database.types.ts` | Generated from the database schema                                                                                                                 |
-| `db/schema.sql`           | Source of truth for the database structure                                                                                                         |
-| `data/`                   | Species dataset as CSV files (see `data/README.md`)                                                                                                |
-| `scripts/build-data.mjs`  | Validates the CSVs and generates `db/seed.sql`                                                                                                     |
-| `docs/decisions.md`       | What we decided and why, plus what is deliberately left for later                                                                                  |
+| Path                                   | What it is                                                                                                                                                                                         |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/`                                 | Routes: landing, `/login`, `/setup` (dex wizard), `/dex`, `/dex/[slug]` (species page and photo logging), `/auth/confirm`, `/auth/signout`; `manifest.ts` and `apple-icon.png` make it installable |
+| `components/dex/`                      | The dex grid, species card, rarity circles and the photo uploader                                                                                                                                  |
+| `lib/auth.ts`                          | Password length rules shared by the sign-up form and its server action                                                                                                                             |
+| `lib/dex.ts`                           | Pure helpers for dex counts, filtering and progress                                                                                                                                                |
+| `lib/images.ts`, `lib/photo-upload.ts` | Browser-side photo resizing, and uploading photos then recording the sighting                                                                                                                      |
+| `lib/supabase/`                        | Browser and server Supabase clients; session refresh used by `proxy.ts`                                                                                                                            |
+| `proxy.ts`                             | Refreshes the session on every request and redirects signed-out visitors to `/login`                                                                                                               |
+| `types/database.types.ts`              | Generated from the database schema                                                                                                                                                                 |
+| `db/schema.sql`                        | Source of truth for the database structure                                                                                                                                                         |
+| `data/`                                | Species dataset as CSV files (see `data/README.md`)                                                                                                                                                |
+| `scripts/build-data.mjs`               | Validates the CSVs and generates `db/seed.sql`                                                                                                                                                     |
+| `docs/decisions.md`                    | What we decided and why, plus what is deliberately left for later                                                                                                                                  |
 
 ## Data model in one paragraph
 
