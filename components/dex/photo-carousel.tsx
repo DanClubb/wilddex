@@ -22,7 +22,13 @@ export type CarouselPhoto = {
 
 // Swipeable photo slider. Controls and dots only appear when there's more than
 // one photo. Each photo has a menu to set it as the cover or delete it.
-export function PhotoCarousel({ photos }: { photos: CarouselPhoto[] }) {
+export function PhotoCarousel({
+    photos,
+    readOnly = false,
+}: {
+    photos: CarouselPhoto[];
+    readOnly?: boolean; // a shared dex: no photo menu
+}) {
     const many = photos.length > 1;
     return (
         <Carousel
@@ -52,11 +58,13 @@ export function PhotoCarousel({ photos }: { photos: CarouselPhoto[] }) {
                                 Cover
                             </Badge>
                         )}
-                        <PhotoMenu
-                            photoId={p.id}
-                            isCover={p.isCover}
-                            isOnly={!many}
-                        />
+                        {!readOnly && (
+                            <PhotoMenu
+                                photoId={p.id}
+                                isCover={p.isCover}
+                                isOnly={!many}
+                            />
+                        )}
                     </CarouselItem>
                 ))}
             </CarouselContent>

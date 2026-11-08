@@ -3,7 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database.types";
 
 // Routes that work without being signed in. Everything else redirects to /login.
-const PUBLIC_PATHS = ["/login", "/auth"];
+// /s is the read-only shared dex: anyone with the link can view it.
+const PUBLIC_PATHS = ["/login", "/auth", "/s"];
 
 function isPublic(pathname: string) {
     return (

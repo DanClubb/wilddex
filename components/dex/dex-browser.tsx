@@ -25,9 +25,13 @@ const STATUSES: { value: DexStatus; label: string }[] = [
 export function DexBrowser({
     cards,
     userId,
+    basePath = "/dex",
+    readOnly = false,
 }: {
     cards: DexCard[];
-    userId: string;
+    userId?: string; // needed to log sightings (not for a read-only shared dex)
+    basePath?: string;
+    readOnly?: boolean;
 }) {
     const [group, setGroup] = useState("all");
     const [status, setStatus] = useState<DexStatus>("all");
@@ -134,12 +138,19 @@ export function DexBrowser({
             ) : (
                 <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                     {visible.map((card) => (
-                        <SpeciesCard key={card.speciesId} card={card} />
+                        <SpeciesCard
+                            key={card.speciesId}
+                            card={card}
+                            basePath={basePath}
+                            readOnly={readOnly}
+                        />
                     ))}
                 </ul>
             )}
 
-            <LogSpeciesModal cards={cards} userId={userId} />
+            {!readOnly && userId && (
+                <LogSpeciesModal cards={cards} userId={userId} />
+            )}
         </div>
     );
 }
