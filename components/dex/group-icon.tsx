@@ -1,4 +1,11 @@
-import { Bird, Fish, FishSymbol, PawPrint, Squirrel, Turtle } from "lucide-react";
+import {
+    Bird,
+    Fish,
+    FishSymbol,
+    PawPrint,
+    Squirrel,
+    Turtle,
+} from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
@@ -69,10 +76,7 @@ const ICONS: Record<string, ComponentType<IconProps>> = {
     "marine-fish": FishSymbol,
 };
 
-export function GroupIcon({
-    slug,
-    ...props
-}: { slug: string } & IconProps) {
+export function GroupIcon({ slug, ...props }: { slug: string } & IconProps) {
     const Icon = ICONS[slug] ?? PawPrint;
     return <Icon aria-hidden="true" {...props} />;
 }

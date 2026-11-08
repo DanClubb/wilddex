@@ -2,10 +2,12 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ViewTransition } from "react";
+import { EditSighting } from "@/components/dex/edit-sighting";
 import { PhotoCarousel } from "@/components/dex/photo-carousel";
 import { PhotoUploader } from "@/components/dex/photo-uploader";
 import { GroupIcon } from "@/components/dex/group-icon";
 import { RarityPips } from "@/components/dex/rarity-pips";
+import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/server";
 import type { Rarity } from "@/lib/dex";
 
@@ -116,13 +118,16 @@ export default async function SpeciesPage({ params }: Props) {
                         {species.scientific_name}
                     </p>
                 )}
-                {rarity ? (
-                    <RarityPips rarity={rarity} />
-                ) : (
-                    <p className="text-sm text-muted-foreground">
-                        Not in your current dex
-                    </p>
-                )}
+                <div className="flex items-center gap-3">
+                    {found && <Badge>Found</Badge>}
+                    {rarity ? (
+                        <RarityPips rarity={rarity} />
+                    ) : (
+                        <p className="text-sm text-muted-foreground">
+                            Not in your current dex
+                        </p>
+                    )}
+                </div>
             </header>
 
             {photos.length > 0 ? (
@@ -140,6 +145,7 @@ export default async function SpeciesPage({ params }: Props) {
                                           id: p.id,
                                           src,
                                           alt: `Your photo ${i + 1} of a ${species.common_name}`,
+                                          isCover: p.is_cover,
                                       },
                                   ]
                                 : [];
@@ -160,12 +166,20 @@ export default async function SpeciesPage({ params }: Props) {
                     aria-labelledby="sighting-heading"
                     className="space-y-1"
                 >
-                    <h2
-                        id="sighting-heading"
-                        className="font-heading text-xl font-bold"
-                    >
-                        Your sighting
-                    </h2>
+                    <div className="flex items-center justify-between">
+                        <h2
+                            id="sighting-heading"
+                            className="font-heading text-xl font-bold"
+                        >
+                            Your sighting
+                        </h2>
+                        <EditSighting
+                            entryId={entry.id}
+                            seenOn={entry.first_seen_on}
+                            location={entry.location_text}
+                            notes={entry.notes}
+                        />
+                    </div>
                     <p className="text-sm">
                         First seen {formatDate(entry.first_seen_on)}
                     </p>
@@ -220,6 +234,10 @@ export default async function SpeciesPage({ params }: Props) {
                 speciesId={species.id}
                 speciesName={species.common_name}
                 entryId={entry?.id ?? null}
+                clues={{
+                    habitat: species.habitat,
+                    bestTime: species.best_time,
+                }}
             />
         </main>
     );

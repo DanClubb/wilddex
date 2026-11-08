@@ -1,7 +1,8 @@
 "use client";
 
-import { Camera, Plus, X } from "lucide-react";
+import { Camera, CircleHelp, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useEffect, useRef, useState, ViewTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -14,6 +15,8 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import { addPhotos, localToday, logSighting } from "@/lib/photo-upload";
 
@@ -27,6 +30,8 @@ type Props = {
     speciesName: string;
     // null until the species has been found; then more photos are added to it.
     entryId: string | null;
+    // Hunting hints for a species not found yet.
+    clues?: { habitat: string | null; bestTime: string | null };
 };
 
 // A button that opens a modal for logging a first sighting (a photo is required)
@@ -51,7 +56,10 @@ export function PhotoUploader(props: Props) {
                         // Re-reads the page on the server so the new photos (and the unlocked
                         // species) appear. Safe even after a partial failure.
                         router.refresh();
-                        if (complete) setOpen(false);
+                        if (complete) {
+                            toast.success("Photos added");
+                            setOpen(false);
+                        }
                     }}
                 />
             </DialogContent>
@@ -68,6 +76,7 @@ export function UploadForm({
     speciesId,
     speciesName,
     entryId,
+    clues,
     onSaved,
     transitionName,
 }: Props & {
@@ -181,6 +190,8 @@ export function UploadForm({
                 </DialogDescription>
             </DialogHeader>
 
+            {firstLog && <Clues clues={clues} />}
+
             <form onSubmit={submit} className="space-y-4">
                 <label className="relative flex h-11 cursor-pointer items-center justify-center gap-2 rounded-4xl border border-input bg-input/30 px-4 text-sm font-medium has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/30 has-[:disabled]:pointer-events-none has-[:disabled]:opacity-50">
                     <Camera aria-hidden="true" className="size-5" />
@@ -206,8 +217,8 @@ export function UploadForm({
                             >
                                 {/* A local preview of a chosen file; next/image can't optimise it. */}
                                 {(() => {
-                                    // eslint-disable-next-line @next/next/no-img-element
                                     const img = (
+                                        // eslint-disable-next-line @next/next/no-img-element
                                         <img
                                             src={p.previewUrl}
                                             alt={`Selected photo ${i + 1}`}
@@ -299,9 +310,7 @@ function DetailsFields({ disabled }: { disabled: boolean }) {
     return (
         <div className="space-y-3">
             <div className="space-y-1.5">
-                <label htmlFor="seenOn" className="text-sm font-medium">
-                    Date seen
-                </label>
+                <Label htmlFor="seenOn">Date seen</Label>
                 <DatePicker
                     id="seenOn"
                     name="seenOn"
@@ -311,12 +320,12 @@ function DetailsFields({ disabled }: { disabled: boolean }) {
                 />
             </div>
             <div className="space-y-1.5">
-                <label htmlFor="location" className="text-sm font-medium">
+                <Label htmlFor="location">
                     Where{" "}
                     <span className="font-normal text-muted-foreground">
                         (optional)
                     </span>
-                </label>
+                </Label>
                 <Input
                     id="location"
                     name="location"
@@ -328,21 +337,45 @@ function DetailsFields({ disabled }: { disabled: boolean }) {
                 />
             </div>
             <div className="space-y-1.5">
-                <label htmlFor="notes" className="text-sm font-medium">
+                <Label htmlFor="notes">
                     Notes{" "}
                     <span className="font-normal text-muted-foreground">
                         (optional)
                     </span>
-                </label>
-                <textarea
+                </Label>
+                <Textarea
                     id="notes"
                     name="notes"
                     rows={3}
                     maxLength={2000}
                     disabled={disabled}
-                    className="w-full min-w-0 rounded-3xl border border-input bg-input/30 px-4 py-3 text-base outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:opacity-50"
                 />
             </div>
         </div>
+    );
+}
+
+// Where-to-look hints, shown on a species that hasn't been found yet.
+function Clues({ clues }: { clues: Props["clues"] }) {
+    const rows = [
+        { label: "Habitat", text: clues?.habitat },
+        { label: "Best time", text: clues?.bestTime },
+    ].filter((r) => r.text);
+    if (rows.length === 0) return null;
+    return (
+        <dl className="space-y-2 rounded-2xl bg-muted p-3 text-sm">
+            {rows.map((r) => (
+                <div key={r.label} className="flex gap-2.5">
+                    <CircleHelp
+                        aria-hidden="true"
+                        className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                    />
+                    <div>
+                        <dt className="font-medium">{r.label}</dt>
+                        <dd className="text-muted-foreground">{r.text}</dd>
+                    </div>
+                </div>
+            ))}
+        </dl>
     );
 }

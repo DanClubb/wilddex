@@ -79,10 +79,18 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 - **The species page also has a log/add-photos modal** (for adding more photos later).
 - **Logging happens in a modal** on the species page, so you never leave it. Photos show in a swipeable
   carousel. The date uses the shadcn calendar and the save progress uses the shadcn spinner.
-- **shadcn components were written by hand** (dialog, popover, calendar, carousel, spinner) because the
-  shadcn registry wasn't reachable from the build sandbox. Running `npx shadcn add <name>` locally will
-  replace them with the official radix-luma versions if you prefer. New dependencies: `embla-carousel-react`
-  (carousel engine) and `react-day-picker` (calendar engine), the same ones shadcn uses.
+- **UI components are the official shadcn (radix-luma) ones**, added locally with `npx shadcn add`
+  (the build sandbox can't reach the shadcn registry). They import `cn` from the `cn` package, which is
+  shadcn's own. `components/ui` is generated code: lint rules that fight it are relaxed in `eslint.config.mjs`.
+  Hand-made exceptions: `input.tsx` (16px text so iOS doesn't zoom) and `date-picker.tsx` (shadcn's
+  popover + calendar recipe).
+- **Photo management on the species page:** each photo has a menu (set as cover, delete with a
+  confirmation) and the sighting card has Edit (date, place, notes). Deleting the last photo removes the
+  species from the collection (the database does this), so the confirmation warns about it. Changes
+  show toasts (sonner).
+- **Log modal shows the species' hunting clues** (habitat, best time) beside "?" icons.
+- **No loading skeleton on `/dex/[slug]` on purpose:** a loading boundary there would stop the photo
+  morph from pairing with the modal's preview.
 - **Logging a sighting = first photo (required) + optional date, place and notes.** Later visits add
   photos only. Photos upload straight from the browser to storage, then a database function records them.
 
@@ -94,9 +102,6 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 - A custom email sender (SMTP) before turning on email confirmation or adding password reset
 
 ## Open items
-
-- **Photo management** (change cover, delete photos, edit notes and date) has database support but no
-  screens yet; it is the next step.
 
 - **Delete my account** must also remove the user's photo files from storage (database rows cascade,
   files do not). Needed before other people use the app.

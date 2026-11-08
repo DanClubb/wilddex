@@ -46,6 +46,8 @@ export type DexCard = {
     rarity: Rarity;
     found: boolean;
     thumbUrl: string | null; // signed URL of the cover photo, when found
+    habitat: string | null; // hunting clues, shown in the log modal
+    bestTime: string | null;
 };
 
 export type DexStatus = "all" | "found" | "missing";

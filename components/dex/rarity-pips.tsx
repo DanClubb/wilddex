@@ -7,10 +7,30 @@ const RARITY: Record<
     Rarity,
     { label: string; filled: number; dot: string; text: string }
 > = {
-    common: { label: "Common", filled: 1, dot: "border-rarity-common bg-rarity-common", text: "text-rarity-common-foreground" },
-    uncommon: { label: "Uncommon", filled: 2, dot: "border-rarity-uncommon bg-rarity-uncommon", text: "text-rarity-uncommon-foreground" },
-    rare: { label: "Rare", filled: 3, dot: "border-rarity-rare bg-rarity-rare", text: "text-rarity-rare-foreground" },
-    legendary: { label: "Legendary", filled: 4, dot: "border-rarity-legendary bg-rarity-legendary", text: "text-rarity-legendary-foreground" },
+    common: {
+        label: "Common",
+        filled: 1,
+        dot: "border-rarity-common bg-rarity-common",
+        text: "text-rarity-common-foreground",
+    },
+    uncommon: {
+        label: "Uncommon",
+        filled: 2,
+        dot: "border-rarity-uncommon bg-rarity-uncommon",
+        text: "text-rarity-uncommon-foreground",
+    },
+    rare: {
+        label: "Rare",
+        filled: 3,
+        dot: "border-rarity-rare bg-rarity-rare",
+        text: "text-rarity-rare-foreground",
+    },
+    legendary: {
+        label: "Legendary",
+        filled: 4,
+        dot: "border-rarity-legendary bg-rarity-legendary",
+        text: "text-rarity-legendary-foreground",
+    },
 };
 
 // Four circles, filled one to four from common to legendary, in the tier's colour,
@@ -25,7 +45,9 @@ export function RarityPips({ rarity }: { rarity: Rarity }) {
                         key={i}
                         className={cn(
                             "size-2.5 rounded-full border-[1.5px]",
-                            i < filled ? dot : cn(dot, "bg-transparent opacity-35"),
+                            i < filled
+                                ? dot
+                                : cn(dot, "bg-transparent opacity-35"),
                         )}
                     />
                 ))}
