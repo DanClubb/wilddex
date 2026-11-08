@@ -25,9 +25,16 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 
 - **Next.js + Supabase + Vercel.** Chosen because the product is front-end heavy, the owner knows
   React and Next.js, and a managed backend means no time lost on auth and storage plumbing.
-- **Passwordless email sign-in.** Magic link for now (works with Supabase's built-in email sender).
-  `/auth/confirm` already accepts both the default `?code=` format and the `?token_hash=` format,
-  so moving to emailed codes later needs a template change and a code-entry field, not a rewrite.
+- **Email and password sign-in** (Supabase Auth stores and hashes the passwords; WildDex never
+  stores them). Passwordless was tried first and dropped: magic links cannot sign in an installed PWA
+  (the app and the browser keep separate storage), and the emailed-code fix needs custom SMTP because
+  Supabase's built-in sender is capped at a few emails an hour. "Confirm email" is off for now so
+  sign-up sends no email. `/auth/confirm` stays for confirmation links when that is turned on.
+- **Google sign-in is the planned next addition**, so nobody has to make a password. It needs a Google
+  Cloud OAuth client; to be added as its own change once that exists.
+- **Installable PWA without a service worker.** `app/manifest.ts` plus icons is enough for "Add to
+  Home Screen". The manifest is excluded from the sign-in redirect in `proxy.ts`, because browsers
+  fetch it without a session. The icon is a placeholder to replace with real artwork.
 - **Rarity is stored per nation** on `species_regions`. For a user, the tiers for the nations they
   selected are averaged and rounded, halves up (rare + common = uncommon, rare + uncommon = rare).
 - **Regions are rows, not columns,** so new regions need no schema change.
@@ -47,8 +54,7 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 - Offline logging
 - User-added custom species (visible only to that user): "MVP v2"
 - GPS and maps, achievements, badges, friends and sharing
-- Emailed sign-in codes, which need a custom email sender
-- A custom email sender for production (the built-in one is for testing only)
+- A custom email sender (SMTP) before turning on email confirmation or adding password reset
 
 ## Open items
 
@@ -57,4 +63,5 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 - **Species data is a first-draft starter set** (62 species) and needs checking against
   authoritative sources before it is trusted. See `data/README.md`.
 - **Conservation status** is not in the data yet and needs proper sourcing.
-- **PWA basics** (manifest, icons, installability) are not built yet.
+- **Password reset** ('forgot password') is not built; it needs working email, so it comes with custom SMTP.
+- **Service worker** (offline shell, caching) is not built; installing works without it.
