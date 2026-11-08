@@ -57,7 +57,8 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 - **Cards for species not yet found show the name and rarity** on a grey placeholder with an animal icon
   for the species group (`components/dex/group-icon.tsx`), so the dex doubles as a list of things to
   look for. A found card shows the user's cover photo, scientific name and a tick.
-- **Rarity is four circles**, filled one (common) to four (legendary), in the tier's colour.
+- **Rarity is four circles**, filled one (common) to four (legendary), in the tier's colour (grey, blue,
+  purple, gold) with the tier name beside them. No background behind them.
 - **Dex page actions** (edit settings, sign out) sit in a nav row above the dex. (Easy to switch to "???" for unfound cards later if we want more mystery.)
 - **Cover photos are shown through signed links** (one hour) because the bucket is private, in a plain
   `<img>` rather than `next/image`.
