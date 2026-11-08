@@ -36,6 +36,24 @@ In the Supabase dashboard, **Authentication → URL Configuration**:
 Sign-in emails link back to `/auth/confirm`, which must be on the allow-list. Open the link in the
 **same browser** you requested it from.
 
+### Email codes (needed for the installed app)
+
+When WildDex is installed on a phone's home screen, the installed app and the browser keep separate
+storage, so a link opened from the email app can't sign the installed app in. The login page
+therefore asks for a **code** typed into the app. The code only appears in the email once the
+template includes it, and Supabase only lets you edit templates after you set up **custom SMTP**
+(**Authentication → Emails → SMTP settings**).
+
+Then edit the **Magic Link** template (**Authentication → Emails → Templates**):
+
+```html
+<h2>Your WildDex sign-in code</h2>
+<p>Enter this code in the app: <strong>{{ .Token }}</strong></p>
+<p>On a computer? <a href="{{ .ConfirmationURL }}">Sign in with a link instead</a>.</p>
+```
+
+Until then, sign-in works with the link in a normal browser, but not in the installed app.
+
 ### Setting up a fresh Supabase project
 
 1. Run `db/schema.sql` in the SQL editor (tables, security rules, functions, photo bucket).
@@ -45,7 +63,7 @@ Sign-in emails link back to `/auth/confirm`, which must be on the allow-list. Op
 
 | Path | What it is |
 |---|---|
-| `app/` | Routes: landing, `/login`, `/setup` (dex wizard), `/dex`, `/auth/confirm`, `/auth/signout` |
+| `app/` | Routes: landing, `/login`, `/setup` (dex wizard), `/dex`, `/auth/confirm`, `/auth/signout`; `manifest.ts` and `apple-icon.png` make it installable |
 | `lib/supabase/` | Browser and server Supabase clients; session refresh used by `proxy.ts` |
 | `proxy.ts` | Refreshes the session on every request and redirects signed-out visitors to `/login` |
 | `types/database.types.ts` | Generated from the database schema |

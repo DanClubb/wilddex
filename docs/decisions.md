@@ -25,9 +25,14 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 
 - **Next.js + Supabase + Vercel.** Chosen because the product is front-end heavy, the owner knows
   React and Next.js, and a managed backend means no time lost on auth and storage plumbing.
-- **Passwordless email sign-in.** Magic link for now (works with Supabase's built-in email sender).
-  `/auth/confirm` already accepts both the default `?code=` format and the `?token_hash=` format,
-  so moving to emailed codes later needs a template change and a code-entry field, not a rewrite.
+- **Passwordless email sign-in, by code or link.** The login page asks for the emailed code (checked
+  on the server with `verifyOtp`), because a link can't sign in an installed PWA (the app and the
+  browser keep separate storage). The link still works in a normal browser via `/auth/confirm`.
+  The code only appears in the email after custom SMTP is set up and the Magic Link template
+  includes `{{ .Token }}` (see README).
+- **Installable PWA without a service worker.** `app/manifest.ts` plus icons is enough for "Add to
+  Home Screen". The manifest is excluded from the sign-in redirect in `proxy.ts`, because browsers
+  fetch it without a session. The icon is a placeholder to replace with real artwork.
 - **Rarity is stored per nation** on `species_regions`. For a user, the tiers for the nations they
   selected are averaged and rounded, halves up (rare + common = uncommon, rare + uncommon = rare).
 - **Regions are rows, not columns,** so new regions need no schema change.
@@ -47,7 +52,6 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 - Offline logging
 - User-added custom species (visible only to that user): "MVP v2"
 - GPS and maps, achievements, badges, friends and sharing
-- Emailed sign-in codes, which need a custom email sender
 - A custom email sender for production (the built-in one is for testing only)
 
 ## Open items
@@ -57,4 +61,4 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 - **Species data is a first-draft starter set** (62 species) and needs checking against
   authoritative sources before it is trusted. See `data/README.md`.
 - **Conservation status** is not in the data yet and needs proper sourcing.
-- **PWA basics** (manifest, icons, installability) are not built yet.
+- **Service worker** (offline shell, caching) is not built; installing works without it.
