@@ -1,5 +1,6 @@
 import { LogOut, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 
 // Account actions, kept above the dex like navigation.
@@ -15,17 +16,20 @@ export function DexNav() {
                     Edit dex settings
                 </Link>
             </Button>
-            <form action="/auth/signout" method="post">
-                <Button
-                    type="submit"
-                    variant="destructive"
-                    size="sm"
-                    className="h-9"
-                >
-                    <LogOut aria-hidden="true" />
-                    Sign out
-                </Button>
-            </form>
+            <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <form action="/auth/signout" method="post">
+                    <Button
+                        type="submit"
+                        variant="destructive"
+                        size="sm"
+                        className="h-9"
+                    >
+                        <LogOut aria-hidden="true" />
+                        Sign out
+                    </Button>
+                </form>
+            </div>
         </nav>
     );
 }

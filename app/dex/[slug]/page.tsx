@@ -7,6 +7,7 @@ import { PhotoCarousel } from "@/components/dex/photo-carousel";
 import { PhotoUploader } from "@/components/dex/photo-uploader";
 import { GroupIcon } from "@/components/dex/group-icon";
 import { RarityPips } from "@/components/dex/rarity-pips";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/server";
 import type { Rarity } from "@/lib/dex";
@@ -99,14 +100,17 @@ export default async function SpeciesPage({ params }: Props) {
 
     return (
         <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pt-6 pb-12">
-            <Link
-                href="/dex"
-                transitionTypes={["nav-back"]}
-                className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
-            >
-                <ArrowLeft aria-hidden="true" className="size-4" />
-                Back to your dex
-            </Link>
+            <div className="flex items-center justify-between">
+                <Link
+                    href="/dex"
+                    transitionTypes={["nav-back"]}
+                    className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+                >
+                    <ArrowLeft aria-hidden="true" className="size-4" />
+                    Back to your dex
+                </Link>
+                <ThemeToggle />
+            </div>
 
             <header className="space-y-2">
                 <p className="text-sm text-muted-foreground">{group?.name}</p>
