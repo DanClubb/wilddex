@@ -3,9 +3,10 @@ import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { PendingIcon } from "./link-pending";
+import { ShareDialog, type ShareState } from "./share-dialog";
 
 // Account actions, kept above the dex like navigation.
-export function DexNav() {
+export function DexNav({ share }: { share: ShareState }) {
     return (
         <nav
             aria-label="Dex"
@@ -20,6 +21,7 @@ export function DexNav() {
                 </Link>
             </Button>
             <div className="flex items-center gap-2">
+                <ShareDialog share={share} />
                 <ThemeToggle />
                 <form action="/auth/signout" method="post">
                     <Button

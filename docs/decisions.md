@@ -105,11 +105,22 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
   defaults to following the device, remembers the choice in the browser, and sets the `dark` class before
   first paint so there's no flash. The choice is per device, not stored on the account.
 
+- **Sharing is a revocable, view-only link** (`/s/<random token>`), created from the share button in
+  the dex nav. No sign-in for visitors. They can browse the dex and open species you've found (unfound
+  species show as names only, not links) and see photos. Notes and place text are hidden unless the
+  owner picks "Photos + notes & places". Turning sharing off kills the link at once; turning it on again
+  makes a new one. Shared pages are `noindex` and send no Referer.
+- **How sharing stays safe:** visitors never touch tables. They call two `security definer` functions
+  (`shared_dex`, `shared_species`) that answer only for a valid token. Photos are in the private bucket;
+  a storage policy lets a visitor's server request sign links only for photos of a shared dex (file names
+  are random UUIDs). Tokens are made by `set_sharing()`, never by the client. Supabase's linter flags
+  these functions as "anon can execute a security definer function": that is intended here.
+
 ## Deliberately later (not MVP)
 
 - Offline logging
 - User-added custom species (visible only to that user): "MVP v2"
-- GPS and maps, achievements, badges, friends and sharing
+- GPS and maps, achievements, badges, friends (sharing a read-only link is done)
 - A custom email sender (SMTP) before turning on email confirmation or adding password reset
 
 ## Open items

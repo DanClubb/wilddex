@@ -103,7 +103,10 @@ export default async function SharedDexPage({
 
             <p className="pt-4 text-center text-sm text-muted-foreground">
                 Want to build your own?{" "}
-                <Link href="/" className="font-medium text-foreground underline">
+                <Link
+                    href="/"
+                    className="font-medium text-foreground underline"
+                >
                     Start your WildDex
                 </Link>
             </p>
