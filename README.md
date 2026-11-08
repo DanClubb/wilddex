@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WildDex
 
-## Getting Started
+A real-life Pokédex for UK wildlife. Choose which regions and species groups you care about,
+photograph what you find, and watch the grey cards fill in.
 
-First, run the development server:
+Mobile-first web app, installable to the home screen (PWA). Built for one user first, with the
+UK wildlife community in mind.
+
+## Stack
+
+- **Next.js 16** (App Router) + React 19 + TypeScript
+- **Tailwind CSS 4** + shadcn/ui primitives
+- **Supabase**: Postgres, Auth (passwordless email), Storage (private photo bucket)
+- **Vercel** for hosting (planned)
+
+> Next.js 16 differs from older versions (for example `proxy.ts` replaces `middleware.ts`).
+> Read the bundled docs in `node_modules/next/dist/docs/` before changing framework-level code.
+
+## Running locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # then fill in the values
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Supabase settings that must match
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+In the Supabase dashboard, **Authentication → URL Configuration**:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Setting | Value |
+|---|---|
+| Site URL | `http://localhost:3000` (your live URL in production) |
+| Redirect URLs | `http://localhost:3000/**` (add your live URL with `/**` too) |
 
-## Learn More
+Sign-in emails link back to `/auth/confirm`, which must be on the allow-list. Open the link in the
+**same browser** you requested it from.
 
-To learn more about Next.js, take a look at the following resources:
+### Setting up a fresh Supabase project
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Run `db/schema.sql` in the SQL editor (tables, security rules, functions, photo bucket).
+2. Generate and run the seed: `node scripts/build-data.mjs`, then run `db/seed.sql`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project layout
 
-## Deploy on Vercel
+| Path | What it is |
+|---|---|
+| `app/` | Routes: landing, `/login`, `/setup` (dex wizard), `/dex`, `/auth/confirm`, `/auth/signout` |
+| `lib/supabase/` | Browser and server Supabase clients; session refresh used by `proxy.ts` |
+| `proxy.ts` | Refreshes the session on every request and redirects signed-out visitors to `/login` |
+| `types/database.types.ts` | Generated from the database schema |
+| `db/schema.sql` | Source of truth for the database structure |
+| `data/` | Species dataset as CSV files (see `data/README.md`) |
+| `scripts/build-data.mjs` | Validates the CSVs and generates `db/seed.sql` |
+| `docs/decisions.md` | What we decided and why, plus what is deliberately left for later |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Data model in one paragraph
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Reference data (`groups`, `regions`, `species`, `species_regions`) is curated here and readable by
+everyone. User data (`profiles`, dex settings, `entries`, `entry_photos`) is private to its owner
+through row-level security. An entry is "this user has found this species" and needs a photo.
+Entries belong to the species, not the dex settings, so changing regions or groups never deletes
+anything. Entries and photos are only changed through database functions that enforce the rules.
+
+## Scripts
+
+| Command | Does |
+|---|---|
+| `npm run dev` | Dev server |
+| `npm run build` | Production build |
+| `npm run lint` | ESLint |
+| `node scripts/build-data.mjs` | Validate species data and regenerate `db/seed.sql` |

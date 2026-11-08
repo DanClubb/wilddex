@@ -1,13 +1,15 @@
-import { Database } from "@/types/database.types";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import type { Database } from "@/types/database.types";
 
+// Supabase client for Server Components, Server Actions and Route Handlers.
+// Create a new one per request; never keep it in a module-level variable.
 export async function createClient() {
     const cookieStore = await cookies();
 
     return createServerClient<Database>(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
         {
             cookies: {
                 getAll() {
@@ -18,7 +20,10 @@ export async function createClient() {
                         cookiesToSet.forEach(({ name, value, options }) =>
                             cookieStore.set(name, value, options),
                         );
-                    } catch {}
+                    } catch {
+                        // Called from a Server Component, which can't write cookies.
+                        // Safe to ignore: proxy.ts refreshes the session on every request.
+                    }
                 },
             },
         },

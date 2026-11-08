@@ -1,0 +1,9 @@
+slug,name,sort_order,default_selected
+birds,Birds,10,true
+land-mammals,Land Mammals,20,true
+bats,Bats,30,false
+marine-mammals,Marine Mammals,40,false
+reptiles,Reptiles,50,true
+amphibians,Amphibians,60,true
+freshwater-fish,Freshwater Fish,70,true
+marine-fish,Marine Fish,80,false
