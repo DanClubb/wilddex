@@ -50,6 +50,21 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
   regions); when a profile exists it opens pre-filled. Counts are worked out in the browser from the
   reference data (`lib/dex.ts`), and saving goes through `save_dex_settings`.
 
+- **The dex grid is filtered in the browser.** The server loads the user's whole dex from the `my_dex`
+  view (found or not, with rarity and cover photo) and the page filters it by group, found/to-find and
+  search. Fine for hundreds of species; move to paging or an RPC well before 1000 (Supabase's
+  per-request row cap).
+- **Cards for species not yet found show the name and rarity** on a grey placeholder with an animal icon
+  for the species group (`components/dex/group-icon.tsx`), so the dex doubles as a list of things to
+  look for. A found card shows the user's cover photo, scientific name and a tick.
+- **Rarity is four circles**, filled one (common) to four (legendary), in the tier's colour (grey, blue,
+  purple, gold) with the tier name beside them. No background behind them.
+- **Dex page actions** (edit settings, sign out) sit in a nav row above the dex. (Easy to switch to "???" for unfound cards later if we want more mystery.)
+- **Cover photos are shown through signed links** (one hour) because the bucket is private, in a plain
+  `<img>` rather than `next/image`.
+- **Rarity colours are theme tokens** (`--rarity-*` in `globals.css`, light and dark), not hard-coded
+  in components.
+
 ## Deliberately later (not MVP)
 
 - Offline logging
