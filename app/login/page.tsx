@@ -14,7 +14,7 @@ export default async function LoginPage({
             <header className="space-y-2 text-center">
                 <h1 className="font-heading text-3xl font-bold">WildDex</h1>
                 <p className="text-muted-foreground">
-                    Sign in or create your account. No password needed.
+                    Find it, photograph it, collect it.
                 </p>
             </header>
 
@@ -23,9 +23,8 @@ export default async function LoginPage({
                     role="alert"
                     className="rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive"
                 >
-                    That link didn&apos;t work. It may have expired, or been
-                    opened in a different browser from the one you requested it
-                    in. Request a new one below.
+                    That link didn&apos;t work. It may have expired. Try signing
+                    in below.
                 </p>
             )}
 
