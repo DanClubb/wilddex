@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Your WildDex" };
 
-// Placeholder: proves sign-in and the database connection work end to end.
-// Next up: the dex setup wizard, then the dex grid replaces this page.
+// Placeholder until the dex grid replaces it.
 export default async function DexPage() {
     const supabase = await createClient();
 
@@ -14,13 +14,14 @@ export default async function DexPage() {
     const claims = data?.claims;
     if (!claims) redirect("/login");
 
-    const [{ count: speciesCount }, { data: profile }] = await Promise.all([
-        supabase
-            .from("species")
-            .select("id", { count: "exact", head: true })
-            .eq("is_active", true),
+    const [{ count: dexCount }, { count: foundCount }, { data: profile }] = await Promise.all([
+        supabase.from("my_dex").select("species_id", { count: "exact", head: true }),
+        supabase.from("entries").select("id", { count: "exact", head: true }),
         supabase.from("profiles").select("dex_name").eq("id", claims.sub).maybeSingle(),
     ]);
+
+    // No profile means the setup wizard has not been finished yet.
+    if (!profile) redirect("/setup");
 
     return (
         <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6 px-4 py-12">
@@ -34,11 +35,13 @@ export default async function DexPage() {
             </header>
 
             <p className="rounded-2xl bg-muted px-4 py-3 text-sm">
-                {speciesCount ?? 0} species in the database.{" "}
-                {profile
-                    ? "Your dex is set up."
-                    : "Dex setup is the next thing we're building."}
+                {foundCount ?? 0} of {dexCount ?? 0} species found. The dex grid is
+                the next thing we&apos;re building.
             </p>
+
+            <Button asChild variant="outline" className="h-11 w-full">
+                <Link href="/setup">Edit dex settings</Link>
+            </Button>
 
             <form action="/auth/signout" method="post">
                 <Button type="submit" variant="outline" className="h-11 w-full">

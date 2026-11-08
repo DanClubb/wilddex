@@ -36,7 +36,11 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 - **Entries and photos change only through database functions** (`log_entry`, `add_entry_photo`,
   `set_cover_photo`, `delete_entry_photo`). Deleting a user's last photo removes the entry.
 - **Species data lives in CSV files in this repo** and is loaded by a generated seed script.
-- **`profiles` is created when the wizard finishes,** not by a trigger on sign-up.
+- **`profiles` is created when the wizard finishes,** not by a trigger on sign-up. `/dex` sends
+  anyone without a profile to `/setup`.
+- **The setup wizard (`/setup`) is also the settings screen.** Same three steps (name, groups,
+  regions); when a profile exists it opens pre-filled. Counts are worked out in the browser from the
+  reference data (`lib/dex.ts`), and saving goes through `save_dex_settings`.
 
 ## Deliberately later (not MVP)
 
