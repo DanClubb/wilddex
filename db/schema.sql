@@ -466,3 +466,55 @@ create policy "own photo files: upload" on storage.objects for insert to authent
   with check (bucket_id = 'entry-photos' and (storage.foldername(name))[1] = (select auth.uid())::text);
 create policy "own photo files: delete" on storage.objects for delete to authenticated
   using (bucket_id = 'entry-photos' and (storage.foldername(name))[1] = (select auth.uid())::text);
+
+
+-- -----------------------------------------------------------------------------
+-- 4b. The species page as one query
+--
+-- The species, its rarity for this user, their entry (if any) and the entry's
+-- photos, in one round trip. security invoker: row-level security still limits
+-- entries and photos to the signed-in user. Returns null for an unknown slug.
+-- (Applied to the live project as the migration "species_page_function".)
+-- -----------------------------------------------------------------------------
+create function public.species_page(p_slug text) returns jsonb
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select jsonb_build_object(
+    'species', jsonb_build_object(
+      'id', s.id,
+      'common_name', s.common_name,
+      'scientific_name', s.scientific_name,
+      'summary', s.summary,
+      'habitat', s.habitat,
+      'best_time', s.best_time,
+      'group_slug', g.slug,
+      'group_name', g.name
+    ),
+    'rarity', d.rarity,
+    'entry', case when e.id is null then null else jsonb_build_object(
+      'id', e.id,
+      'first_seen_on', e.first_seen_on,
+      'location_text', e.location_text,
+      'notes', e.notes
+    ) end,
+    'photos', coalesce((
+      select jsonb_agg(
+        jsonb_build_object('id', p.id, 'storage_path', p.storage_path, 'is_cover', p.is_cover)
+        order by p.is_cover desc, p.created_at, p.id
+      )
+      from public.entry_photos p
+      where p.entry_id = e.id and p.user_id = (select auth.uid())
+    ), '[]'::jsonb)
+  )
+  from public.species s
+  join public.groups g on g.id = s.group_id
+  left join public.my_dex d on d.species_id = s.id
+  left join public.entries e on e.species_id = s.id and e.user_id = (select auth.uid())
+  where s.slug = p_slug
+$$;
+
+revoke execute on function public.species_page(text) from public, anon;
+grant execute on function public.species_page(text) to authenticated;
