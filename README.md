@@ -46,6 +46,8 @@ Sign-in emails link back to `/auth/confirm`, which must be on the allow-list. Op
 | Path | What it is |
 |---|---|
 | `app/` | Routes: landing, `/login`, `/setup` (dex wizard), `/dex`, `/auth/confirm`, `/auth/signout` |
+| `components/dex/` | The dex grid: species card and the filterable browser |
+| `lib/dex.ts` | Pure helpers for dex counts, filtering and progress |
 | `lib/supabase/` | Browser and server Supabase clients; session refresh used by `proxy.ts` |
 | `proxy.ts` | Refreshes the session on every request and redirects signed-out visitors to `/login` |
 | `types/database.types.ts` | Generated from the database schema |
