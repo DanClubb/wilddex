@@ -366,6 +366,7 @@ export type Database = {
         Returns: undefined
       }
       set_cover_photo: { Args: { p_photo_id: string }; Returns: undefined }
+      species_page: { Args: { p_slug: string }; Returns: Json }
     }
     Enums: {
       rarity_tier: "common" | "uncommon" | "rare" | "legendary"
