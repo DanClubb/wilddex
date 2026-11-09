@@ -60,7 +60,7 @@ visitors), escapes and species that are not established. Insects are out of scop
 
 ## Status of the current data
 
-**This is a first-draft starter set (127 species), not the full UK list.** It was written
+**This is a first-draft starter set (166 species), not the full UK list.** It was written
 from general knowledge to prove out the shape of the data and cover the awkward cases
 (species missing from some nations, different rarity per nation, protected species). Before
 relying on it:
