@@ -36,6 +36,9 @@ export const metadata: Metadata = {
       media: `(device-width: ${width}px) and (device-height: ${height}px) and (-webkit-device-pixel-ratio: ${ratio}) and (orientation: portrait)`,
     })),
   },
+  // Next only writes the newer "mobile-web-app-capable" tag, but iOS ignores the launch images
+  // unless the older Apple-prefixed one is also present, even when a manifest exists.
+  other: { "apple-mobile-web-app-capable": "yes" },
 };
 
 export const viewport: Viewport = {
