@@ -69,12 +69,16 @@ from (values
   ('common-lizard', 'Common Lizard', 'Zootoca vivipara', 'reptiles', 'A small, fast, brown lizard that gives birth to live young.', 'Heathland, grassland, moorland and woodland edges', 'Sunny spring and autumn days when basking'),
   ('slow-worm', 'Slow Worm', 'Anguis fragilis', 'reptiles', 'A legless lizard that looks like a snake but has eyelids and can drop its tail.', 'Gardens, grassland, heathland and compost heaps', 'Mild, overcast days; check under warm refuges'),
   ('smooth-snake', 'Smooth Snake', 'Coronella austriaca', 'reptiles', 'A slender, secretive snake restricted to a few southern heathlands and strictly protected.', 'Dry lowland heathland in southern England', 'April to September; very hard to find, so join a guided walk'),
+  ('sand-lizard', 'Sand Lizard', 'Lacerta agilis', 'reptiles', 'A stocky, patterned lizard whose males turn bright green in spring; restricted to a few protected heathland and dune sites.', 'Sandy heathland and coastal sand dunes', 'April to September on warm, sunny days; protected, so never handle or disturb'),
+  ('common-wall-lizard', 'Common Wall Lizard', 'Podarcis muralis', 'reptiles', 'A slim, agile, brown-grey lizard that basks on sunny walls and rocks; a southern European species breeding in a few long-established colonies.', 'Sunny walls, rocky banks, quarries and cliffs', 'Sunny days from spring to autumn, on south-facing walls; seek local guidance'),
+  ('aesculapian-snake', 'Aesculapian Snake', 'Zamenis longissimus', 'reptiles', 'A long, slender, olive-brown snake that climbs well; native to continental Europe, with a few breeding colonies in Britain.', 'Warm, sheltered, wooded spots near water, and old buildings', 'Warm summer days; seek local guidance'),
   ('common-frog', 'Common Frog', 'Rana temporaria', 'amphibians', 'A familiar brown or olive frog that spawns in clumps in garden and woodland ponds.', 'Ponds, gardens, damp grassland and woodland', 'Spawning from late winter; tadpoles in spring'),
   ('common-toad', 'Common Toad', 'Bufo bufo', 'amphibians', 'A warty, brown toad that walks rather than hops and migrates to ponds in spring.', 'Woodland, gardens, grassland and ponds', 'Spring migration on mild, damp evenings'),
   ('smooth-newt', 'Smooth Newt', 'Lissotriton vulgaris', 'amphibians', 'A small newt; breeding males have a spotted belly and a wavy crest.', 'Garden ponds, ditches and ponds', 'March to June, in breeding ponds'),
   ('palmate-newt', 'Palmate Newt', 'Lissotriton helveticus', 'amphibians', 'A very small newt with a pale throat and webbed back feet, favouring acidic water.', 'Heathland pools, moorland ponds and woodland pools', 'March to June, in breeding ponds'),
   ('great-crested-newt', 'Great Crested Newt', 'Triturus cristatus', 'amphibians', 'Britain''s largest newt, with a jagged crest on breeding males; strictly protected by law.', 'Well-vegetated ponds and surrounding rough grassland', 'Spring; observe without handling and never disturb ponds'),
   ('natterjack-toad', 'Natterjack Toad', 'Epidalea calamita', 'amphibians', 'A yellow-striped toad that runs rather than hops and has a loud, rolling call.', 'Coastal dunes, sandy heaths and saltmarsh', 'April to June, at evening choruses'),
+  ('pool-frog', 'Pool Frog', 'Pelophylax lessonae', 'amphibians', 'A small green-brown frog with a pale stripe down its back and a loud, rattling call; one of Britain''s rarest amphibians, reintroduced to Norfolk.', 'Clean, weedy ponds in Norfolk', 'May to July; listen at dusk for the call; seek local guidance'),
   ('brown-trout', 'Brown Trout', 'Salmo trutta', 'freshwater-fish', 'A native fish with spotted flanks; the sea trout is the same species in its migratory form.', 'Clear, cool rivers and lakes', 'Spring to autumn'),
   ('atlantic-salmon', 'Atlantic Salmon', 'Salmo salar', 'freshwater-fish', 'A migratory fish famed for leaping weirs on its way upstream to spawn.', 'Rivers and the sea', 'Autumn runs; some rivers earlier in the year'),
   ('northern-pike', 'Northern Pike', 'Esox lucius', 'freshwater-fish', 'A long ambush predator with a duck-bill snout and sharp teeth.', 'Slow rivers, lakes, canals and reed-fringed margins', 'Spring to autumn, in clear shallow water'),
@@ -121,7 +125,7 @@ on conflict (slug) do update set
   summary = excluded.summary, habitat = excluded.habitat, best_time = excluded.best_time;
 
 delete from public.species_regions
-where species_id in (select id from public.species where slug in ('robin', 'blackbird', 'blue-tit', 'house-sparrow', 'magpie', 'mute-swan', 'grey-heron', 'red-kite', 'common-buzzard', 'barn-owl', 'tawny-owl', 'kingfisher', 'dipper', 'atlantic-puffin', 'osprey', 'golden-eagle', 'capercaillie', 'corncrake', 'red-fox', 'european-badger', 'european-hedgehog', 'red-squirrel', 'eastern-grey-squirrel', 'roe-deer', 'red-deer', 'pine-marten', 'eurasian-otter', 'stoat', 'weasel', 'mountain-hare', 'water-vole', 'scottish-wildcat', 'common-pipistrelle', 'noctule', 'daubentons-bat', 'greater-horseshoe-bat', 'grey-seal', 'harbour-seal', 'harbour-porpoise', 'bottlenose-dolphin', 'minke-whale', 'adder', 'grass-snake', 'common-lizard', 'slow-worm', 'smooth-snake', 'common-frog', 'common-toad', 'smooth-newt', 'palmate-newt', 'great-crested-newt', 'natterjack-toad', 'brown-trout', 'atlantic-salmon', 'northern-pike', 'european-eel', 'three-spined-stickleback', 'arctic-charr', 'grayling', 'basking-shark', 'ocean-sunfish', 'atlantic-mackerel', 'perch', 'roach', 'rudd', 'chub', 'dace', 'gudgeon', 'minnow', 'bullhead', 'stone-loach', 'tench', 'common-bream', 'barbel', 'nine-spined-stickleback', 'bleak', 'ruffe', 'brook-lamprey', 'river-lamprey', 'sea-lamprey', 'spined-loach', 'smelt', 'twaite-shad', 'crucian-carp', 'powan', 'vendace', 'pollan', 'common-carp', 'rainbow-trout', 'goldfish', 'zander'));
+where species_id in (select id from public.species where slug in ('robin', 'blackbird', 'blue-tit', 'house-sparrow', 'magpie', 'mute-swan', 'grey-heron', 'red-kite', 'common-buzzard', 'barn-owl', 'tawny-owl', 'kingfisher', 'dipper', 'atlantic-puffin', 'osprey', 'golden-eagle', 'capercaillie', 'corncrake', 'red-fox', 'european-badger', 'european-hedgehog', 'red-squirrel', 'eastern-grey-squirrel', 'roe-deer', 'red-deer', 'pine-marten', 'eurasian-otter', 'stoat', 'weasel', 'mountain-hare', 'water-vole', 'scottish-wildcat', 'common-pipistrelle', 'noctule', 'daubentons-bat', 'greater-horseshoe-bat', 'grey-seal', 'harbour-seal', 'harbour-porpoise', 'bottlenose-dolphin', 'minke-whale', 'adder', 'grass-snake', 'common-lizard', 'slow-worm', 'smooth-snake', 'sand-lizard', 'common-wall-lizard', 'aesculapian-snake', 'common-frog', 'common-toad', 'smooth-newt', 'palmate-newt', 'great-crested-newt', 'natterjack-toad', 'pool-frog', 'brown-trout', 'atlantic-salmon', 'northern-pike', 'european-eel', 'three-spined-stickleback', 'arctic-charr', 'grayling', 'basking-shark', 'ocean-sunfish', 'atlantic-mackerel', 'perch', 'roach', 'rudd', 'chub', 'dace', 'gudgeon', 'minnow', 'bullhead', 'stone-loach', 'tench', 'common-bream', 'barbel', 'nine-spined-stickleback', 'bleak', 'ruffe', 'brook-lamprey', 'river-lamprey', 'sea-lamprey', 'spined-loach', 'smelt', 'twaite-shad', 'crucian-carp', 'powan', 'vendace', 'pollan', 'common-carp', 'rainbow-trout', 'goldfish', 'zander'));
 
 insert into public.species_regions (species_id, region_id, rarity)
 select sp.id, rg.id, v.rarity::public.rarity_tier
@@ -280,6 +284,12 @@ from (values
   ('slow-worm', 'scotland', 'uncommon'),
   ('slow-worm', 'wales', 'uncommon'),
   ('smooth-snake', 'england', 'legendary'),
+  ('sand-lizard', 'england', 'rare'),
+  ('sand-lizard', 'wales', 'legendary'),
+  ('common-wall-lizard', 'england', 'rare'),
+  ('common-wall-lizard', 'wales', 'rare'),
+  ('aesculapian-snake', 'england', 'legendary'),
+  ('aesculapian-snake', 'wales', 'legendary'),
   ('common-frog', 'england', 'common'),
   ('common-frog', 'scotland', 'common'),
   ('common-frog', 'wales', 'common'),
@@ -300,6 +310,7 @@ from (values
   ('natterjack-toad', 'england', 'rare'),
   ('natterjack-toad', 'scotland', 'rare'),
   ('natterjack-toad', 'wales', 'rare'),
+  ('pool-frog', 'england', 'legendary'),
   ('brown-trout', 'england', 'uncommon'),
   ('brown-trout', 'scotland', 'uncommon'),
   ('brown-trout', 'wales', 'uncommon'),
