@@ -127,7 +127,7 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 
 - **Delete my account** must also remove the user's photo files from storage (database rows cascade,
   files do not). Needed before other people use the app.
-- **Species data is a first-draft starter set** (127 species) and needs checking against
+- **Species data is a first-draft starter set** (166 species) and needs checking against
   authoritative sources before it is trusted. See `data/README.md`.
 - **Conservation status** is not in the data yet and needs proper sourcing.
 - **Password reset** ('forgot password') is not built; it needs working email, so it comes with custom SMTP.
