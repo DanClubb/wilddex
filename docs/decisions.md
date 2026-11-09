@@ -44,7 +44,10 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
   (leaf mark + wordmark + tagline, drawn as vectors so no font is needed; uses the `sharp` that
   ships with Next). iOS caches these when the app is added to the home screen, so an existing
   install must be removed and re-added to see a change. A device missing from the list just gets
-  the blank screen, so add new iPhone/iPad sizes to the JSON and re-run the script. The logo is
+  the blank screen, so add new iPhone/iPad sizes to the JSON and re-run the script.
+  iOS also ignores the launch images unless the old `apple-mobile-web-app-capable` meta tag is
+  present (Next only writes the newer `mobile-web-app-capable`), so `app/layout.tsx` adds it
+  through `metadata.other`. The logo is
   still the placeholder leaf: replace the leaf paths in the script when real artwork exists.
 - **Rarity is stored per nation** on `species_regions`. For a user, the tiers for the nations they
   selected are averaged and rounded, halves up (rare + common = uncommon, rare + uncommon = rare).
