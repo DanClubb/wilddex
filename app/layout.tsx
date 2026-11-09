@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import splashScreens from "@/lib/splash-screens.json";
 
 const montserratHeading = Montserrat({subsets:['latin'],variable:'--font-heading'});
 
@@ -24,7 +25,17 @@ export const metadata: Metadata = {
   description:
     "A real-life Pokédex for UK wildlife. Find it, photograph it, collect it.",
   // iOS ignores parts of the manifest, so it needs these too to run full-screen.
-  appleWebApp: { capable: true, title: "WildDex", statusBarStyle: "default" },
+  appleWebApp: {
+    capable: true,
+    title: "WildDex",
+    statusBarStyle: "default",
+    // The launch screen iOS shows while the app starts. iOS needs one exact-size image per
+    // device screen, or it shows a blank screen. Made by scripts/build-splash.mjs.
+    startupImage: splashScreens.map(({ width, height, ratio }) => ({
+      url: `/splash/${width * ratio}x${height * ratio}.png`,
+      media: `(device-width: ${width}px) and (device-height: ${height}px) and (-webkit-device-pixel-ratio: ${ratio}) and (orientation: portrait)`,
+    })),
+  },
 };
 
 export const viewport: Viewport = {

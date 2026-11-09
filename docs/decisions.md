@@ -36,6 +36,16 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
 - **Installable PWA without a service worker.** `app/manifest.ts` plus icons is enough for "Add to
   Home Screen". The manifest is excluded from the sign-in redirect in `proxy.ts`, because browsers
   fetch it without a session. The icon is a placeholder to replace with real artwork.
+- **Launch (splash) screen.** Android builds its own from `app/manifest.ts` (name, icon and
+  `background_color`, now the brand green `#15803d`). iOS ignores the manifest and shows a blank
+  screen (black in dark mode) unless the page declares an exact-size `apple-touch-startup-image` per
+  device, so `app/layout.tsx` declares 19 of them (`appleWebApp.startupImage`, devices listed in
+  `lib/splash-screens.json`) and `scripts/build-splash.mjs` generates the PNGs in `public/splash/`
+  (leaf mark + wordmark + tagline, drawn as vectors so no font is needed; uses the `sharp` that
+  ships with Next). iOS caches these when the app is added to the home screen, so an existing
+  install must be removed and re-added to see a change. A device missing from the list just gets
+  the blank screen, so add new iPhone/iPad sizes to the JSON and re-run the script. The logo is
+  still the placeholder leaf: replace the leaf paths in the script when real artwork exists.
 - **Rarity is stored per nation** on `species_regions`. For a user, the tiers for the nations they
   selected are averaged and rounded, halves up (rare + common = uncommon, rare + uncommon = rare).
 - **Regions are rows, not columns,** so new regions need no schema change.
