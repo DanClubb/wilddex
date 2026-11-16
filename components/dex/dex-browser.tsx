@@ -1,7 +1,8 @@
 "use client";
 
 import { SearchX } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -11,6 +12,7 @@ import {
     type DexCard,
     type DexStatus,
 } from "@/lib/dex";
+import { restoreDexScroll } from "@/lib/dex-view";
 import { LogSpeciesModal } from "./log-species-modal";
 import { SpeciesCard } from "./species-card";
 
@@ -33,9 +35,37 @@ export function DexBrowser({
     basePath?: string;
     readOnly?: boolean;
 }) {
-    const [group, setGroup] = useState("all");
-    const [status, setStatus] = useState<DexStatus>("all");
-    const [query, setQuery] = useState("");
+    // The filters live in the address (?group=&status=&q=) so Back from a species page,
+    // a refresh, or a shared link all land on the same view. They are read once here
+    // and written back (without adding history entries) whenever they change.
+    const params = useSearchParams();
+    const [group, setGroup] = useState(() => {
+        const g = params.get("group");
+        return g && cards.some((c) => c.groupSlug === g) ? g : "all";
+    });
+    const [status, setStatus] = useState<DexStatus>(() => {
+        const s = params.get("status");
+        return STATUSES.some((x) => x.value === s) ? (s as DexStatus) : "all";
+    });
+    const [query, setQuery] = useState(() => params.get("q") ?? "");
+
+    useEffect(() => {
+        const next = new URLSearchParams(window.location.search); // keeps ?log=
+        const set = (key: string, value: string) =>
+            value ? next.set(key, value) : next.delete(key);
+        set("group", group === "all" ? "" : group);
+        set("status", status === "all" ? "" : status);
+        set("q", query.trim());
+        const qs = next.toString();
+        const url = window.location.pathname + (qs ? `?${qs}` : "");
+        if (url !== window.location.pathname + window.location.search)
+            window.history.replaceState(null, "", url);
+    }, [group, status, query]);
+
+    // Coming back from a species page: scroll to where the user was.
+    useEffect(() => {
+        restoreDexScroll();
+    }, []);
 
     const groups = useMemo(() => groupProgress(cards), [cards]);
     const visible = useMemo(

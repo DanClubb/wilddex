@@ -1,10 +1,16 @@
-// The log modal on the dex grid lives at /dex?log=<slug>. It's opened with the
+// The log modal on the dex grid lives at /dex?log=<slug> (plus any filters already in the address). It's opened with the
 // browser's History API (which Next.js syncs with useSearchParams), so opening it
 // doesn't re-fetch the page, and the back button closes it.
 let pushed = false;
 
 export function openLog(slug: string) {
-    window.history.pushState(null, "", `/dex?log=${encodeURIComponent(slug)}`);
+    const params = new URLSearchParams(window.location.search);
+    params.set("log", slug);
+    window.history.pushState(
+        null,
+        "",
+        `${window.location.pathname}?${params.toString()}`,
+    );
     pushed = true;
 }
 
@@ -15,7 +21,14 @@ export function closeLog() {
         pushed = false;
         window.history.back();
     } else {
-        window.history.replaceState(null, "", "/dex");
+        const params = new URLSearchParams(window.location.search);
+        params.delete("log");
+        const qs = params.toString();
+        window.history.replaceState(
+            null,
+            "",
+            window.location.pathname + (qs ? `?${qs}` : ""),
+        );
     }
 }
 

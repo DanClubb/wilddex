@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { DexCard } from "@/lib/dex";
+import { saveDexView } from "@/lib/dex-view";
 import { closeLog, resetLogState } from "@/lib/log-url";
 import { UploadForm } from "./photo-uploader";
 
@@ -45,6 +46,7 @@ export function LogSpeciesModal({
                         onSaved={() => {
                             resetLogState();
                             toast.success(`${card.name} unlocked!`);
+                            saveDexView();
                             router.push(`/dex/${card.slug}`, {
                                 transitionTypes: ["nav-forward"],
                             });
