@@ -1,7 +1,7 @@
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache, ViewTransition } from "react";
+import { BackToDex } from "@/components/dex/back-to-dex";
 import { PendingIcon } from "@/components/dex/link-pending";
 import { PhotoCarousel } from "@/components/dex/photo-carousel";
 import { RarityPips } from "@/components/dex/rarity-pips";
@@ -87,16 +87,15 @@ export default async function SharedSpeciesPage({ params }: Props) {
     return (
         <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pt-6 pb-12">
             <div className="flex items-center justify-between">
-                <Link
+                <BackToDex
                     href={`/s/${token}`}
-                    transitionTypes={["nav-back"]}
                     className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
                 >
                     <PendingIcon>
                         <ArrowLeft aria-hidden="true" className="size-4" />
                     </PendingIcon>
                     Back to {page.dex_name ?? "the dex"}
-                </Link>
+                </BackToDex>
                 <ThemeToggle />
             </div>
 

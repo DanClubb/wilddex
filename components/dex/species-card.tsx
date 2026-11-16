@@ -4,6 +4,7 @@ import { ViewTransition } from "react";
 import { cn } from "@/lib/utils";
 import type { DexCard } from "@/lib/dex";
 import { GroupIcon } from "./group-icon";
+import { saveDexView } from "@/lib/dex-view";
 import { openLog } from "@/lib/log-url";
 import { PendingOverlay } from "./link-pending";
 import { RarityPips } from "./rarity-pips";
@@ -106,8 +107,6 @@ export function SpeciesCard({
                     // only: modified clicks (new tab) and no-JS still go to the species page.
                     onClick={(e) => {
                         if (
-                            readOnly ||
-                            card.found ||
                             e.metaKey ||
                             e.ctrlKey ||
                             e.shiftKey ||
@@ -115,6 +114,11 @@ export function SpeciesCard({
                             e.button !== 0
                         )
                             return;
+                        if (readOnly || card.found) {
+                            // Going to the species page: remember filters and scroll for Back.
+                            saveDexView();
+                            return;
+                        }
                         e.preventDefault();
                         openLog(card.slug);
                     }}

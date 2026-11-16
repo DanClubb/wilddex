@@ -89,6 +89,12 @@ What we have agreed, and why. Update this when a decision changes, so it stays t
   an intercepting route: simpler, no extra request to open, and the grid keeps its filters and scroll.
   Once logged, it navigates to `/dex/<slug>` and the first photo morphs into the species page's photo
   (React `ViewTransition`). Found species skip the modal and go straight to their page.
+- **The grid's filters live in the address** (`/dex?group=&status=&q=`), written with
+  `history.replaceState` so they add no history entries and cost no server request. That keeps them
+  across a refresh, the browser's back button and shared links. Scroll position can't go in the
+  address, so `lib/dex-view.ts` saves it (with the view's URL) in `sessionStorage` when the user
+  leaves for a species page. "Back to your dex" goes to that saved URL and the grid scrolls back on load.
+  With nothing saved (a direct link) it goes to the plain dex.
 - **The species page also has a log/add-photos modal** (for adding more photos later).
 - **Logging happens in a modal** on the species page, so you never leave it. Photos show in a swipeable
   carousel. The date uses the shadcn calendar and the save progress uses the shadcn spinner.
