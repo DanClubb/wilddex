@@ -39,6 +39,17 @@ export function readDexView(): SavedView | null {
     }
 }
 
+// Subscribe stub for useSyncExternalStore: the saved view only changes while we're on
+// another page, so there is nothing to listen for.
+export function subscribeDexView() {
+    return () => {};
+}
+
+// The saved view's URL, or null. A string (not an object) so React can compare snapshots.
+export function savedDexUrl(): string | null {
+    return readDexView()?.url ?? null;
+}
+
 export function clearDexView() {
     try {
         sessionStorage.removeItem(KEY);
